@@ -1,0 +1,17 @@
+{
+  "name": "Developer OS",
+  "short_name": "DevOS",
+  "description": "Developer Operating System — Ambiente de Treinamento com IA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090a0f",
+  "theme_color": "#00ff66",
+  "icons": [
+    {
+      "src": "/terminal.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
