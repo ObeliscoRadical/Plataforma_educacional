@@ -12,6 +12,7 @@ import { examService } from '../services/exam.service.js';
 import { analyticsService } from '../services/analytics.service.js';
 import { adminService } from '../services/admin.service.js';
 import { freeNeuralTts } from '../services/tts.service.js';
+import { stripeService } from '../services/stripe.service.js';
 import { authMiddleware, AuthenticatedRequest } from '../middlewares/auth.middleware.js';
 import { requireRoles } from '../middlewares/rbac.middleware.js';
 
@@ -50,9 +51,53 @@ apiRouter.get('/system/status', (_req, res) => {
       curriculumModules: 24,
       videoPipelineEngine: 'ONLINE',
       voiceTTS: 'Free Neural Voice Engine (pt-BR Voz Grossa 100% Free)',
+      stripePaymentGateway: 'READY (R$ 9,90/mês)',
       pwaServiceWorker: 'ACTIVE'
     }
   });
+});
+
+// ==================== STRIPE / SUBSCRIPTION ====================
+apiRouter.get('/user/subscription', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+  const userId = getUserId(req);
+  const subscription = stripeService.getUserSubscription(userId);
+  res.json({ subscription });
+});
+
+apiRouter.post('/stripe/create-checkout-session', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+  try {
+    const userId = getUserId(req);
+    const { returnUrl } = req.body;
+    const session = await stripeService.createCheckoutSession(userId, returnUrl);
+    res.json(session);
+  } catch (err) {
+    next(err);
+  }
+});
+
+apiRouter.post('/stripe/verify-session', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+  try {
+    const { sessionId } = req.body;
+    const userId = req.user?.id;
+    if (!sessionId) {
+      res.status(400).json({ error: 'SESSION_ID_REQUIRED' });
+      return;
+    }
+    const result = await stripeService.verifySession(sessionId, userId);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+apiRouter.post('/stripe/mock-activate', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+  try {
+    const userId = getUserId(req);
+    const result = await stripeService.mockActivate(userId);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // ==================== TTS / VOICE SYNTHESIS ====================
@@ -95,7 +140,7 @@ apiRouter.post('/auth/register', async (req, res, next) => {
   try {
     const { email, password, name, handle } = req.body;
     if (!email || !password || !name || !handle) {
-      res.status(400).json({ error: 'MISSING_FIELDS', message: 'Email, password, name and handle are required.' });
+      res.status(400).json({ error: 'MISSING_FIELDS', message: 'Email, senha, nome e @handle são obrigatórios.' });
       return;
     }
     const result = await authService.register({ email, password, name, handle });

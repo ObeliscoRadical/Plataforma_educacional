@@ -4,11 +4,11 @@ import { useTerminal, ActiveView } from '../../context/TerminalContext.js';
 import { 
   Terminal, Cpu, BookOpen, Code2, Award, 
   FolderGit2, Sparkles, Video, ShieldCheck, 
-  LogOut, LogIn, Wifi, WifiOff, Bot, Wrench, Zap
+  LogOut, LogIn, Wifi, WifiOff, Bot, Wrench, Zap, CreditCard, CheckCircle2
 } from 'lucide-react';
 
 export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, setPaywallOpen } = useAuth();
   const { activeView, setActiveView, breadcrumb, isOnline, mentorOpen, setMentorOpen, addLog } = useTerminal();
   const [commandInput, setCommandInput] = useState('');
 
@@ -31,8 +31,9 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
     else if (cmd === 'studio' || cmd === 'video') setActiveView('VIDEO_STUDIO');
     else if (cmd === 'admin') setActiveView('ADMIN');
     else if (cmd === 'mentor') setMentorOpen(!mentorOpen);
+    else if (cmd === 'pay' || cmd === 'checkout' || cmd === 'plan' || cmd === 'stripe') setPaywallOpen(true);
     else if (cmd === 'help') {
-      addLog('Available commands: dashboard, curriculum, codelab, arena, skills, projects, remedials, exam, studio, admin, mentor, clear', 'INFO');
+      addLog('Available commands: dashboard, curriculum, codelab, arena, skills, projects, remedials, exam, studio, admin, mentor, pay, clear', 'INFO');
     } else {
       addLog(`zsh: command not found: ${cmd}. Type 'help' for available subsystem targets.`, 'WARN');
     }
@@ -50,6 +51,8 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
     { view: 'VIDEO_STUDIO', label: 'STUDIO', icon: Video, role: 'ADMIN' },
     { view: 'ADMIN', label: 'ADMIN OS', icon: ShieldCheck, role: 'ADMIN' },
   ];
+
+  const isSubscribed = user?.role === 'ADMIN' || user?.subscription_status === 'ACTIVE';
 
   return (
     <header className="sticky top-0 z-40 bg-dev-surface/90 backdrop-blur-md border-b border-dev-border">
@@ -85,6 +88,22 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
               </span>
             )}
           </div>
+
+          {/* Subscription Status Button */}
+          {isSubscribed ? (
+            <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>PRO R$ 9,90</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => setPaywallOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 transition-all animate-pulse"
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>ASSINAR R$ 9,90</span>
+            </button>
+          )}
 
           {/* AI Mentor Trigger Button */}
           <button
@@ -158,7 +177,7 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
             type="text"
             value={commandInput}
             onChange={(e) => setCommandInput(e.target.value)}
-            placeholder="cmd: open lesson 00.01 | codelab | arena..."
+            placeholder="cmd: open lesson 00.01 | codelab | arena | pay..."
             className="bg-transparent border-none outline-none w-full text-dev-text placeholder-dev-muted/60 font-mono text-xs"
           />
         </form>

@@ -1,4 +1,5 @@
 export type UserRole = 'STUDENT' | 'ADMIN' | 'MENTOR';
+export type SubscriptionStatus = 'PENDING_PAYMENT' | 'ACTIVE' | 'TRIAL' | 'CANCELED';
 
 export interface User {
   id: string;
@@ -7,6 +8,8 @@ export interface User {
   handle: string;
   role: UserRole;
   avatar?: string;
+  subscription_status?: SubscriptionStatus;
+  plan_id?: string;
 }
 
 export type SkillStatus = 'NOT_LEARNED' | 'FRAGILE' | 'ASSISTED' | 'MASTERED';

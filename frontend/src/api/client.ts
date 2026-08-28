@@ -43,6 +43,31 @@ export class ApiClient {
     return this.request<{ status: string; kernel: string; subsystems: any }>('/system/status');
   }
 
+  // Stripe & Subscription
+  createCheckoutSession(returnUrl?: string) {
+    return this.request<{ url: string; sessionId: string; isMock: boolean }>('/stripe/create-checkout-session', {
+      method: 'POST',
+      body: JSON.stringify({ returnUrl }),
+    });
+  }
+
+  verifySession(sessionId: string) {
+    return this.request<{ success: boolean; user: any; message: string }>('/stripe/verify-session', {
+      method: 'POST',
+      body: JSON.stringify({ sessionId }),
+    });
+  }
+
+  mockActivateSubscription() {
+    return this.request<{ success: boolean; user: any; message: string }>('/stripe/mock-activate', {
+      method: 'POST',
+    });
+  }
+
+  getUserSubscription() {
+    return this.request<{ subscription: any }>('/user/subscription');
+  }
+
   // Voice TTS
   synthesizeSpeech(text: string, voiceId?: string) {
     return this.request<{ success: boolean; audioUrl?: string; durationSeconds?: number; fallback?: boolean; provider?: string; message?: string }>('/tts/synthesize', {

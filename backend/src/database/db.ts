@@ -15,6 +15,7 @@ export function getDb(): Database.Database {
     dbInstance.pragma('cache_size = -64000'); // 64MB cache
     
     initSchema(dbInstance);
+    runMigrations(dbInstance);
   }
   return dbInstance;
 }
@@ -25,6 +26,21 @@ export function initSchema(db: Database.Database) {
     const schemaSql = fs.readFileSync(schemaPath, 'utf8');
     db.exec(schemaSql);
   }
+}
+
+export function runMigrations(db: Database.Database) {
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN subscription_status TEXT DEFAULT 'PENDING_PAYMENT'`);
+  } catch {}
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN stripe_customer_id TEXT`);
+  } catch {}
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN stripe_session_id TEXT`);
+  } catch {}
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN plan_id TEXT DEFAULT 'CADET_PRO_990'`);
+  } catch {}
 }
 
 export function closeDb() {

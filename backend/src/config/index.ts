@@ -10,10 +10,16 @@ export const config = {
   dbPath: process.env.DB_PATH || path.resolve(process.cwd(), 'developer_os.sqlite'),
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
-  fishAudioApiKey: process.env.FISH_AUDIO_API_KEY || 'sk-fish-AWsZ4SMNS0H0BjAtcVN5gTpWnqcHN6vDPbOkzQ_As6Y',
-  fishAudioVoiceId: process.env.FISH_AUDIO_VOICE_ID || '4eb3d738d92d4508b47ffa81e2f5f11a',
+  fishAudioApiKey: process.env.FISH_AUDIO_API_KEY || '',
+  fishAudioVoiceId: process.env.FISH_AUDIO_VOICE_ID || 'b59c8403f2354d46ba0003589b947316',
   nodeEnv: process.env.NODE_ENV || 'development',
   
+  // Stripe & Subscription
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  stripePriceId: process.env.STRIPE_PRICE_ID || 'price_developer_os_990_monthly',
+  appBaseUrl: process.env.APP_BASE_URL || 'http://localhost:5173',
+
   // Default Skill & Progress weights
   defaultWeights: {
     knowledge: 0.15,

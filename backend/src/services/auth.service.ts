@@ -11,6 +11,8 @@ export interface UserPayload {
   handle: string;
   role: 'STUDENT' | 'ADMIN' | 'MENTOR';
   avatar?: string;
+  subscription_status?: 'PENDING_PAYMENT' | 'ACTIVE' | 'TRIAL' | 'CANCELED';
+  plan_id?: string;
 }
 
 export class AuthService {
@@ -24,6 +26,8 @@ export class AuthService {
         name: user.name,
         handle: user.handle,
         role: user.role,
+        subscription_status: user.subscription_status || 'PENDING_PAYMENT',
+        plan_id: user.plan_id || 'CADET_PRO_990'
       },
       config.jwtSecret,
       { expiresIn: '7d' }
@@ -39,6 +43,8 @@ export class AuthService {
         name: decoded.name,
         handle: decoded.handle,
         role: decoded.role,
+        subscription_status: decoded.subscription_status,
+        plan_id: decoded.plan_id
       };
     } catch {
       return null;
@@ -54,11 +60,12 @@ export class AuthService {
     const id = `user_${uuidv4().substring(0, 8)}`;
     const passwordHash = bcrypt.hashSync(data.password, 10);
     const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(data.handle)}`;
+    const initialSubscriptionStatus = 'PENDING_PAYMENT';
 
     this.db.prepare(`
-      INSERT INTO users (id, email, password_hash, name, handle, role, avatar)
-      VALUES (?, ?, ?, ?, ?, 'STUDENT', ?)
-    `).run(id, data.email, passwordHash, data.name, data.handle, avatar);
+      INSERT INTO users (id, email, password_hash, name, handle, role, avatar, subscription_status, plan_id)
+      VALUES (?, ?, ?, ?, ?, 'STUDENT', ?, ?, 'CADET_PRO_990')
+    `).run(id, data.email, passwordHash, data.name, data.handle, avatar, initialSubscriptionStatus);
 
     // Initialize all skills for new student
     const skills = this.db.prepare('SELECT id FROM skills').all() as { id: string }[];
@@ -95,7 +102,9 @@ export class AuthService {
       name: data.name,
       handle: data.handle,
       role: 'STUDENT',
-      avatar
+      avatar,
+      subscription_status: initialSubscriptionStatus,
+      plan_id: 'CADET_PRO_990'
     };
 
     const token = this.generateToken(user);
@@ -104,7 +113,7 @@ export class AuthService {
 
   async login(emailOrHandle: string, password: string): Promise<{ user: UserPayload; token: string }> {
     const userRow = this.db.prepare(`
-      SELECT id, email, password_hash, name, handle, role, avatar 
+      SELECT id, email, password_hash, name, handle, role, avatar, subscription_status, plan_id 
       FROM users 
       WHERE email = ? OR handle = ?
     `).get(emailOrHandle, emailOrHandle) as any;
@@ -124,7 +133,9 @@ export class AuthService {
       name: userRow.name,
       handle: userRow.handle,
       role: userRow.role,
-      avatar: userRow.avatar
+      avatar: userRow.avatar,
+      subscription_status: userRow.subscription_status || (userRow.role === 'ADMIN' ? 'ACTIVE' : 'PENDING_PAYMENT'),
+      plan_id: userRow.plan_id || 'CADET_PRO_990'
     };
 
     const token = this.generateToken(user);
@@ -133,7 +144,7 @@ export class AuthService {
 
   getUserById(id: string): UserPayload | null {
     const userRow = this.db.prepare(`
-      SELECT id, email, name, handle, role, avatar, created_at 
+      SELECT id, email, name, handle, role, avatar, subscription_status, plan_id, created_at 
       FROM users 
       WHERE id = ?
     `).get(id) as any;
@@ -145,7 +156,9 @@ export class AuthService {
       name: userRow.name,
       handle: userRow.handle,
       role: userRow.role,
-      avatar: userRow.avatar
+      avatar: userRow.avatar,
+      subscription_status: userRow.subscription_status || (userRow.role === 'ADMIN' ? 'ACTIVE' : 'PENDING_PAYMENT'),
+      plan_id: userRow.plan_id || 'CADET_PRO_990'
     };
   }
 }

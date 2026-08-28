@@ -16,6 +16,7 @@ import { VideoStudio } from './components/video/VideoStudio.js';
 import { AdminPortal } from './components/admin/AdminPortal.js';
 import { MentorHUD } from './components/mentor/MentorHUD.js';
 import { AuthModal } from './components/auth/AuthModal.js';
+import { PaywallModal } from './components/checkout/PaywallModal.js';
 
 const MainShell: React.FC = () => {
   const { user } = useAuth();
@@ -62,8 +63,11 @@ const MainShell: React.FC = () => {
       {/* Floating AI Mentor HUD */}
       <MentorHUD />
 
-      {/* Authentication Dialog */}
+      {/* Authentication Dialog (Login & Register) */}
       <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+
+      {/* Subscription Paywall Dialog (R$ 9,90/mês) */}
+      <PaywallModal />
     </div>
   );
 };
