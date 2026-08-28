@@ -32,7 +32,8 @@ export class ApiClient {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      throw new Error(data.message || data.error || `HTTP Error ${res.status}`);
+      const message = data.message || data.error || (res.status === 500 ? 'Erro interno no servidor. Tente novamente em instantes.' : `Erro de requisição (${res.status}).`);
+      throw new Error(message);
     }
 
     return data as T;

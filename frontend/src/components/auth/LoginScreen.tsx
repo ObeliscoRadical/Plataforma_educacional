@@ -224,13 +224,16 @@ export const LoginScreen: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-[11px] text-zinc-400 mb-1 flex items-center gap-1.5">
-                        <Shield className="w-3.5 h-3.5 text-dev-cyan" /> @handle do Aluno
+                        <Shield className="w-3.5 h-3.5 text-dev-cyan" /> @handle do Aluno (Sem espaços)
                       </label>
                       <input
                         type="text"
                         required
                         value={handle}
-                        onChange={(e) => setHandle(e.target.value)}
+                        onChange={(e) => {
+                          setHandle(e.target.value.toLowerCase().replace(/\s+/g, ''));
+                          setError('');
+                        }}
                         className="w-full px-3.5 py-2.5 bg-black border border-dev-border rounded-lg text-xs text-white focus:border-dev-cyan outline-none"
                         placeholder="ex: cyber_neo"
                       />
