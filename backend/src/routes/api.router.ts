@@ -405,7 +405,39 @@ apiRouter.get('/analytics/metrics', optionalAuthMiddleware, (_req, res) => {
   res.json({ metrics });
 });
 
-// ==================== ADMIN ====================
+// ==================== ADMIN & GOVERNANCE ====================
+apiRouter.get('/admin/dashboard', optionalAuthMiddleware, (_req, res) => {
+  const metrics = adminService.getDashboardMetrics();
+  res.json({ metrics });
+});
+
+apiRouter.get('/admin/users', optionalAuthMiddleware, (_req, res) => {
+  const users = adminService.getAllUsersDetailed();
+  res.json({ users });
+});
+
+apiRouter.post('/admin/users/:id/subscription', optionalAuthMiddleware, (req, res) => {
+  const { status } = req.body;
+  const user = adminService.updateUserSubscription(getIdParam(req.params.id), status);
+  res.json({ success: true, user });
+});
+
+apiRouter.post('/admin/users/:id/role', optionalAuthMiddleware, (req, res) => {
+  const { role } = req.body;
+  const user = adminService.updateUserRole(getIdParam(req.params.id), role);
+  res.json({ success: true, user });
+});
+
+apiRouter.post('/admin/users/:id/reset', optionalAuthMiddleware, (req, res) => {
+  const result = adminService.resetUserProgress(getIdParam(req.params.id));
+  res.json(result);
+});
+
+apiRouter.get('/admin/activity-feed', optionalAuthMiddleware, (_req, res) => {
+  const feed = adminService.getRecentActivityFeed(30);
+  res.json({ feed });
+});
+
 apiRouter.get('/admin/settings', optionalAuthMiddleware, (_req, res) => {
   res.json({ settings: adminService.getSettings() });
 });
@@ -417,5 +449,6 @@ apiRouter.put('/admin/settings', optionalAuthMiddleware, (req, res) => {
 });
 
 apiRouter.get('/admin/students', optionalAuthMiddleware, (_req, res) => {
-  res.json({ students: adminService.getAllStudentsProgress() });
+  const users = adminService.getAllUsersDetailed();
+  res.json({ students: users });
 });

@@ -243,6 +243,38 @@ export class ApiClient {
     return this.request<{ metrics: any }>('/analytics/metrics');
   }
 
+  getAdminDashboardMetrics() {
+    return this.request<{ metrics: any }>('/admin/dashboard');
+  }
+
+  getAdminUsers() {
+    return this.request<{ users: any[] }>('/admin/users');
+  }
+
+  updateUserSubscription(userId: string, status: 'ACTIVE' | 'PENDING_PAYMENT' | 'CANCELED') {
+    return this.request<{ success: boolean; user: any }>(`/admin/users/${userId}/subscription`, {
+      method: 'POST',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  updateUserRole(userId: string, role: 'STUDENT' | 'ADMIN' | 'MENTOR') {
+    return this.request<{ success: boolean; user: any }>(`/admin/users/${userId}/role`, {
+      method: 'POST',
+      body: JSON.stringify({ role }),
+    });
+  }
+
+  resetUserProgress(userId: string) {
+    return this.request<{ success: boolean; message: string }>(`/admin/users/${userId}/reset`, {
+      method: 'POST',
+    });
+  }
+
+  getAdminActivityFeed() {
+    return this.request<{ feed: any[] }>('/admin/activity-feed');
+  }
+
   getAdminSettings() {
     return this.request<{ settings: any[] }>('/admin/settings');
   }
