@@ -33,14 +33,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setPaywallOpen(true);
           }
           return;
+        } else {
+          api.clearToken();
+          setUser(null);
         }
+      } else {
+        setUser(null);
       }
-
-      // Guest Boot (Student demo account)
-      const bootRes = await api.login('student@devos.academy', 'student123');
-      api.setToken(bootRes.token);
-      setUser(bootRes.user);
     } catch {
+      api.clearToken();
       setUser(null);
     } finally {
       setLoading(false);
@@ -58,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.success && res.user) {
           setUser(res.user);
           setPaywallOpen(false);
-          // Remove query params from url cleanly
+          // Clean query params from url
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       }).catch(() => {});
@@ -82,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const res = await api.register(data);
     api.setToken(res.token);
     setUser(res.user);
-    // New registrations are immediately directed to the paywall / checkout
+    // Direct new user to subscription paywall / checkout
     setPaywallOpen(true);
   };
 
@@ -99,7 +100,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     api.clearToken();
     setUser(null);
     setPaywallOpen(false);
-    refreshUser();
   };
 
   const requiresPayment = !!user && user.role !== 'ADMIN' && user.subscription_status === 'PENDING_PAYMENT';

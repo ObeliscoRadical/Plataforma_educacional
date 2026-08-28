@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.js';
 import { TerminalProvider, useTerminal } from './context/TerminalContext.js';
 import { TerminalHeader } from './components/shell/TerminalHeader.js';
-import { BootScreen } from './components/dashboard/BootScreen.js';
+import { LoginScreen } from './components/auth/LoginScreen.js';
 import { Dashboard } from './components/dashboard/Dashboard.js';
 import { CurriculumTree } from './components/curriculum/CurriculumTree.js';
 import { LessonView } from './components/curriculum/LessonView.js';
@@ -15,35 +15,30 @@ import { FinalExamView } from './components/exam/FinalExamView.js';
 import { VideoStudio } from './components/video/VideoStudio.js';
 import { AdminPortal } from './components/admin/AdminPortal.js';
 import { MentorHUD } from './components/mentor/MentorHUD.js';
-import { AuthModal } from './components/auth/AuthModal.js';
 import { PaywallModal } from './components/checkout/PaywallModal.js';
 
 const MainShell: React.FC = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { activeView } = useTerminal();
-  const [hasBooted, setHasBooted] = useState<boolean>(false);
-  const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    const bootFlag = sessionStorage.getItem('devos_booted');
-    if (bootFlag) {
-      setHasBooted(true);
-    }
-  }, []);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050608] flex items-center justify-center p-12 text-dev-green font-mono text-xs">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+        Inicializando subsistemas do Developer OS...
+      </div>
+    );
+  }
 
-  const handleBootComplete = () => {
-    sessionStorage.setItem('devos_booted', 'true');
-    setHasBooted(true);
-  };
-
-  if (!hasBooted) {
-    return <BootScreen onComplete={handleBootComplete} />;
+  // If no user is logged in, show the Login/Registration Screen as the FIRST SCREEN
+  if (!user) {
+    return <LoginScreen />;
   }
 
   return (
     <div className="min-h-screen bg-dev-bg text-dev-text font-mono flex flex-col selection:bg-dev-green selection:text-black">
       {/* Terminal Header */}
-      <TerminalHeader onOpenAuth={() => setAuthModalOpen(true)} />
+      <TerminalHeader onOpenAuth={() => {}} />
 
       {/* Viewport Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 pb-20">
@@ -62,9 +57,6 @@ const MainShell: React.FC = () => {
 
       {/* Floating AI Mentor HUD */}
       <MentorHUD />
-
-      {/* Authentication Dialog (Login & Register) */}
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
 
       {/* Subscription Paywall Dialog (R$ 9,90/mês) */}
       <PaywallModal />
