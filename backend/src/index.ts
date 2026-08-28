@@ -3,7 +3,7 @@ import { config } from './config/index.js';
 
 const { server } = createServer();
 
-server.listen(config.port, () => {
+server.listen(config.port, '0.0.0.0', () => {
   console.log(`
 ┌────────────────────────────────────────────────────────────┐
 │                    DEVELOPER OS KERNEL                     │
