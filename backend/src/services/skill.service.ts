@@ -11,7 +11,7 @@ export interface SkillWeights {
 }
 
 export class SkillService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   getWeights(): SkillWeights {
     const getSetting = (k: string, def: number) => {

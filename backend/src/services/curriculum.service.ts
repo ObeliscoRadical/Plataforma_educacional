@@ -1,7 +1,7 @@
 import { getDb } from '../database/db.js';
 
 export class CurriculumService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   getCourses() {
     return this.db.prepare('SELECT * FROM courses WHERE is_published = 1').all();

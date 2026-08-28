@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { skillService } from './skill.service.js';
 
 export class ExamService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   getExamStatus(userId: string) {
     let exam = this.db.prepare(`

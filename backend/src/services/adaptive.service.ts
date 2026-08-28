@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { skillService } from './skill.service.js';
 
 export class AdaptiveService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   /**
    * Scans student's skill proficiency and automatically generates a targeted

@@ -16,7 +16,7 @@ export interface UserPayload {
 }
 
 export class AuthService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   generateToken(user: UserPayload): string {
     return jwt.sign(

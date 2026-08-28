@@ -1,7 +1,7 @@
 import { getDb } from '../database/db.js';
 
 export class AnalyticsService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   getSystemMetrics() {
     const totalUsers = this.db.prepare('SELECT COUNT(*) as count FROM users WHERE role = "STUDENT"').get() as any;

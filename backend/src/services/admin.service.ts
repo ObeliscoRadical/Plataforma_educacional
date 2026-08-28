@@ -19,7 +19,7 @@ export interface AdminUserDetail {
 }
 
 export class AdminService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   getSettings() {
     return this.db.prepare('SELECT * FROM admin_settings').all();

@@ -12,7 +12,7 @@ export interface MentorChatRequest {
 }
 
 export class MentorService {
-  private db = getDb();
+  private get db() { return getDb(); }
 
   async getOrCreateSession(userId: string, lessonId?: string) {
     let session = this.db.prepare(`

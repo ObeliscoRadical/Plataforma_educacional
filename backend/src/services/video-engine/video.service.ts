@@ -5,7 +5,7 @@ import { DevVideoPipelineAdapter } from './providers.js';
 export type VideoJobStatus = 'DRAFT' | 'GENERATING' | 'GENERATED' | 'REVIEW_REQUIRED' | 'APPROVED' | 'PUBLISHED' | 'FAILED';
 
 export class VideoEngineService {
-  private db = getDb();
+  private get db() { return getDb(); }
   private adapter = new DevVideoPipelineAdapter();
 
   async createGenerationJob(lessonId: string) {

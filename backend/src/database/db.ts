@@ -29,30 +29,22 @@ export function initSchema(db: Database.Database) {
 }
 
 export function runMigrations(db: Database.Database) {
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN subscription_status TEXT DEFAULT 'PENDING_PAYMENT'`);
-  } catch {}
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN stripe_customer_id TEXT`);
-  } catch {}
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN stripe_session_id TEXT`);
-  } catch {}
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN plan_id TEXT DEFAULT 'CADET_PRO_990'`);
-  } catch {}
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN last_login_at DATETIME DEFAULT CURRENT_TIMESTAMP`);
-  } catch {}
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN login_count INTEGER DEFAULT 1`);
-  } catch {}
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN streak_days INTEGER DEFAULT 1`);
-  } catch {}
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN total_time_spent_min INTEGER DEFAULT 45`);
-  } catch {}
+  const columnsToAdd = [
+    "ALTER TABLE users ADD COLUMN subscription_status TEXT DEFAULT 'PENDING_PAYMENT'",
+    "ALTER TABLE users ADD COLUMN stripe_customer_id TEXT",
+    "ALTER TABLE users ADD COLUMN stripe_session_id TEXT",
+    "ALTER TABLE users ADD COLUMN plan_id TEXT DEFAULT 'CADET_PRO_990'",
+    "ALTER TABLE users ADD COLUMN last_login_at TEXT",
+    "ALTER TABLE users ADD COLUMN login_count INTEGER DEFAULT 1",
+    "ALTER TABLE users ADD COLUMN streak_days INTEGER DEFAULT 1",
+    "ALTER TABLE users ADD COLUMN total_time_spent_min INTEGER DEFAULT 45"
+  ];
+
+  for (const sql of columnsToAdd) {
+    try {
+      db.exec(sql);
+    } catch {}
+  }
 }
 
 export function closeDb() {

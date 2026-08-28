@@ -4,7 +4,7 @@ import { config } from '../config/index.js';
 
 export class StripeService {
   private stripe: Stripe | null = null;
-  private db = getDb();
+  private get db() { return getDb(); }
 
   constructor() {
     if (config.stripeSecretKey) {
