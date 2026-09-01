@@ -43,8 +43,14 @@ export function createServer() {
   app.use('/api', apiRouter);
 
   // Serve Frontend Static Assets if built
-  const frontendDistPath = path.resolve(__dirname, '../../frontend/dist');
-  if (fs.existsSync(frontendDistPath)) {
+  const potentialPaths = [
+    path.resolve(__dirname, '../../frontend/dist'),
+    path.resolve(process.cwd(), '../frontend/dist'),
+    path.resolve(process.cwd(), 'frontend/dist'),
+    path.resolve(process.cwd(), 'dist')
+  ];
+  const frontendDistPath = potentialPaths.find(p => fs.existsSync(p));
+  if (frontendDistPath) {
     app.use(express.static(frontendDistPath));
     app.get('*', (req, res, next) => {
       if (req.path.startsWith('/api') || req.path.startsWith('/ws')) {
