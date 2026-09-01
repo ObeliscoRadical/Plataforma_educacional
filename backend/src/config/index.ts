@@ -5,14 +5,24 @@ dotenv.config();
 
 export const config = {
   port: parseInt(process.env.PORT || '4050', 10),
-  jwtSecret: process.env.JWT_SECRET || 'devos-super-secret-jwt-key-2026-matrix-omega',
+  jwtSecret: process.env.JWT_SECRET || 'devos-plataforma-educacional-secret-2026',
   jwtExpiresIn: '7d',
   dbPath: process.env.DB_PATH || path.resolve(process.cwd(), 'developer_os.sqlite'),
   mongoUri: process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL || '',
+  
+  // LiteLLM Gateway (Central Virtual Key Provider)
+  litellmBaseUrl: process.env.LITELLM_BASE_URL || 'https://berriailitellm-databasev1826rc3-production-2f93.up.railway.app',
+  litellmApiKey: process.env.LITELLM_API_KEY || '',
+  litellmModel: process.env.LITELLM_MODEL || 'Gemini Auto Key',
+
+  // Direct Gemini API (Fallback)
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
-  fishAudioApiKey: process.env.FISH_AUDIO_API_KEY || '',
-  fishAudioVoiceId: process.env.FISH_AUDIO_VOICE_ID || 'b59c8403f2354d46ba0003589b947316',
+  
+  // Neural Voice Synthesis (FishAudio)
+  fishAudioApiKey: process.env.FISHAUDIO_API_KEY || process.env.FISH_AUDIO_API_KEY || '',
+  fishAudioVoiceId: process.env.FISHAUDIO_VOICE_ID || process.env.FISH_AUDIO_VOICE_ID || 'ec426c7ea3554caba8a5b077a4c701aa',
+  
   nodeEnv: process.env.NODE_ENV || 'development',
   
   // Stripe & Subscription

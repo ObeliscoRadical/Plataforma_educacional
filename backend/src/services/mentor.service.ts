@@ -149,16 +149,7 @@ export class MentorService {
     exerciseContext: string;
     solutionCode: string;
   }): Promise<{ message: string; suggestedCode?: string; analysis?: any }> {
-    // If Gemini API Key is present, call Gemini API
-    if (config.geminiApiKey) {
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${config.geminiModel}:generateContent?key=${config.geminiApiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: {
-              parts: [{
-                text: `You are the DEVELOPER_OS_AI_MENTOR, an elite principal software architect assisting a developer in a terminal-like environment.
+    const systemPrompt = `You are the DEVELOPER_OS_AI_MENTOR, an elite principal software architect assisting a developer in a terminal-like environment.
 Your tone is concise, precise, technical, encouraging yet rigorous.
 CRITICAL PEDAGOGICAL RULE: Progressive Scaffolding Level = ${ctx.hintLevel}/5.
 Level 1: Ask a guiding Socratic question that makes the student think.
@@ -171,13 +162,61 @@ Do NOT reveal the direct code solution unless hintLevel is 5.
 Student Info: ${ctx.userName} (@${ctx.userHandle}).
 Fragile Skills: ${ctx.fragileSkills.join(', ') || 'None'}.
 Mastered: ${ctx.masteredSkills.join(', ') || 'None'}.
-Current Context: ${ctx.lessonContext}. ${ctx.exerciseContext}.`
-              }]
+Current Context: ${ctx.lessonContext}. ${ctx.exerciseContext}.`;
+
+    const userPrompt = `User Question: "${ctx.userMessage}"\n${ctx.codeSnippet ? `Student's current code:\n\`\`\`javascript\n${ctx.codeSnippet}\n\`\`\`` : ''}`;
+
+    // 1. LiteLLM Virtual Key Gateway (Primary Provider)
+    if (config.litellmApiKey && config.litellmBaseUrl) {
+      try {
+        const litellmEndpoint = config.litellmBaseUrl.endsWith('/chat/completions') 
+          ? config.litellmBaseUrl 
+          : `${config.litellmBaseUrl.replace(/\/$/, '')}/chat/completions`;
+
+        const response = await fetch(litellmEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.litellmApiKey}`
+          },
+          body: JSON.stringify({
+            model: config.litellmModel || 'Gemini Auto Key',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 1024
+          })
+        });
+
+        if (response.ok) {
+          const data: any = await response.json();
+          const replyText = data.choices?.[0]?.message?.content;
+          if (replyText) {
+            return {
+              message: replyText,
+              analysis: { provider: 'LITELLM_VIRTUAL_GATEWAY', model: config.litellmModel, scaffoldingLevel: ctx.hintLevel }
+            };
+          }
+        }
+      } catch (err) {
+        console.warn('LiteLLM Gateway call failed, falling back to direct Gemini API:', err);
+      }
+    }
+
+    // 2. Direct Gemini API (Secondary Fallback)
+    if (config.geminiApiKey) {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${config.geminiModel}:generateContent?key=${config.geminiApiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: {
+              parts: [{ text: systemPrompt }]
             },
             contents: [{
-              parts: [{
-                text: `User Question: "${ctx.userMessage}"\n${ctx.codeSnippet ? `Student's current code:\n\`\`\`javascript\n${ctx.codeSnippet}\n\`\`\`` : ''}`
-              }]
+              parts: [{ text: userPrompt }]
             }]
           })
         });
@@ -188,7 +227,7 @@ Current Context: ${ctx.lessonContext}. ${ctx.exerciseContext}.`
           if (replyText) {
             return {
               message: replyText,
-              analysis: { provider: 'GEMINI_AI', model: config.geminiModel, scaffoldingLevel: ctx.hintLevel }
+              analysis: { provider: 'DIRECT_GEMINI_AI', model: config.geminiModel, scaffoldingLevel: ctx.hintLevel }
             };
           }
         }
@@ -197,7 +236,7 @@ Current Context: ${ctx.lessonContext}. ${ctx.exerciseContext}.`
       }
     }
 
-    // Cognitive Heuristic Scaffolding Fallback Engine
+    // 3. Cognitive Heuristic Scaffolding Fallback Engine
     return this.generateCognitiveFallback(ctx);
   }
 
