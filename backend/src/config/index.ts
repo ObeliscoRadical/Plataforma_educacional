@@ -8,6 +8,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'devos-super-secret-jwt-key-2026-matrix-omega',
   jwtExpiresIn: '7d',
   dbPath: process.env.DB_PATH || path.resolve(process.cwd(), 'developer_os.sqlite'),
+  mongoUri: process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL || '',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
   fishAudioApiKey: process.env.FISH_AUDIO_API_KEY || '',

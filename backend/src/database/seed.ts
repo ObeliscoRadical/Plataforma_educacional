@@ -230,7 +230,7 @@ export async function runSeed() {
 }
 
 // Auto-run if executed directly
-if (process.argv[1] && process.argv[1].endsWith('seed.ts')) {
+if (process.argv[1] && (process.argv[1].endsWith('seed.ts') || process.argv[1].endsWith('seed.js') || process.argv[1].includes('seed'))) {
   runSeed().catch((err) => {
     console.error('❌ [DEVELOPER OS] Seed error:', err);
     process.exit(1);

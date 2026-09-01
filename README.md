@@ -1,78 +1,84 @@
-# 🚀 DEVELOPER OS — Sistema de Formação Integral de Software Engineer
+# 🎓 PLATAFORMA EDUCACIONAL (Developer OS)
 
-> **A plataforma de mentoria prática com Inteligência Artificial, sala de aula interativa, live execution stepper e gamificação do zero ao Tech Lead.**
-
----
-
-## 🌟 Recursos Principais
-
-- **🎓 Sala de Aula Virtual com Professor**: Videoaula com áudio neural em português, quadro didático de arquitetura e digitação de código ao vivo na tela.
-- **💻 Laboratório de Mãos Dadas com o Mentor**: Editor de código integrado dentro da aula com execução instantânea no sandbox (`⌘+Enter`) e feedback falado em tempo real.
-- **🔍 Raio-X do Código (Live Stepper)**: Visualizador de execução linha a linha com painel de variáveis vivas na memória Stack e Heap.
-- **🐛 Conserte o Bug do Estagiário**: Desafios reais de pair debugging com stack traces de produção e recompensas de XP.
-- **🎙️ Mentor IA com Entrada e Saída de Voz**: Converse por voz em português com o Professor Marcus para tirar dúvidas conceituais e obter pistas socráticas (Scaffolding L1 a L5).
-- **🌳 Árvore de Habilidades RPG**: Skill tree visual interativa dividida em 5 Estágios de Mestria (60+ missões atômicas).
-- **⚡ Arena de Speed Coding**: Desafios blitz de 60 segundos com multiplicadores de combo streak e ranking de pontuação.
-- **🖥️ Live DOM & Component Sandbox**: Renderização em tempo real de interfaces HTML/CSS com Hot Reload.
+> **Sistema Completo de Formação de Software Engineer com Inteligência Artificial, Sala de Aula Interativa, Mentor IA com Voz, Painel de Governança, Stripe (R$ 9,90/mês) e Banco de Dados MongoDB + SQLite.**
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 🌟 Recursos da Plataforma
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS, Vite, Lucide Icons, Web Speech API, Progressive Web App (PWA).
-- **Backend**: Node.js, Express, WebSocket (`ws`), SQLite3 (WAL Mode), Google Gemini 3.6 Flash, Free Neural TTS (`edge-tts`).
-- **DevOps**: Docker, Nixpacks, Railway ready.
-
----
-
-## 🚀 Como Rodar Localmente
-
-### 1. Clonar e Instalar Dependências
-```bash
-git clone https://github.com/SEU_USUARIO/developer-os.git
-cd developer-os
-
-# Instalar dependências do Backend e Frontend
-cd backend && npm install
-cd ../frontend && npm install
-```
-
-### 2. Configurar Variáveis de Ambiente
-Crie um arquivo `.env` dentro da pasta `backend/`:
-```env
-PORT=4050
-NODE_ENV=development
-JWT_SECRET=devos-super-secret-key
-DATABASE_PATH=./data/developer_os.sqlite
-GEMINI_API_KEY=SUA_CHAVE_GEMINI_AQUI
-GEMINI_MODEL=gemini-3.6-flash
-```
-
-### 3. Popular o Banco de Dados e Iniciar
-```bash
-# Na pasta raiz:
-npm run seed
-npm run dev
-```
-Acesse no seu navegador:
-- **Frontend**: `http://localhost:5173/`
-- **Backend**: `http://localhost:4050/`
+- **🔐 Tela Inicial de Login & Cadastro**: Primeira tela do sistema ao abrir a URL com validação e segurança JWT.
+- **💳 Paywall & Assinatura Stripe (R$ 9,90/mês)**: Ativação instantânea e integração com cartão/Pix via Stripe Checkout.
+- **👑 Painel de Administração & Governança (Admin Hub)**:
+  - Controle de mensalidades, faturamento MRR e extrato financeiro.
+  - Gestão de alunos: aprovação manual de assinaturas, suspensão e reset de progresso.
+  - Telemetria em tempo real de acessos, streak de dias e frequência de estudo.
+- **🎓 Sala de Aula Virtual Interativa**: Professor Marcus com áudio neural em português e digitação na tela.
+- **🎙️ Mentor IA 24/7 com Entrada e Saída de Voz**: Suporte a microfone e respostas faladas instantâneas.
+- **🔍 Raio-X do Código (Live Stepper)**: Visualizador de memória Stack e Heap passo a passo.
+- **🐛 Conserte o Bug do Estagiário**: Desafios de pair debugging com stack traces reais.
+- **⚡ Arena Blitz de Speed Coding**: Desafios de 60 segundos com multiplicadores de combo streak.
+- **🍃 Suporte Nativo a MongoDB**: Conexão com MongoDB no Railway ou MongoDB Atlas (`MONGODB_URI`).
 
 ---
 
-## 🚂 Como Publicar na Railway (Passo a Passo)
+## 🚂 Como Publicar na Railway + MongoDB (Passo a Passo)
 
-1. Crie um novo repositório no seu **GitHub** (ex: `developer-os`).
-2. Envie o código para o GitHub:
+### 1. Criar o Repositório no GitHub
+1. Acesse o [GitHub.com/new](https://github.com/new) e crie um novo repositório com o nome:
+   👉 **`Plataforma_educacional`**
+2. No seu computador/terminal, envie o código:
    ```bash
-   git remote add origin https://github.com/SEU_USUARIO/developer-os.git
+   cd "/Users/diegooliveira/.gemini/antigravity/scratch/developer-os"
+
+   # Adicione o link do seu repositório:
+   git remote add origin https://github.com/SEU_USUARIO/Plataforma_educacional.git
    git branch -M main
    git push -u origin main
    ```
-3. Acesse [Railway.app](https://railway.app) e faça login com seu GitHub.
-4. Clique em **`+ New Project`** ➔ **`Deploy from GitHub repo`** ➔ Selecione `developer-os`.
-5. Em **Variables** (Variáveis de Ambiente), adicione:
-   - `GEMINI_API_KEY`: sua chave da API do Google Gemini.
-   - `JWT_SECRET`: uma chave secreta qualquer (ex: `devos-prod-key-12345`).
-   - `NODE_ENV`: `production`
-6. O Railway irá compilar o frontend, gerar o banco SQLite e colocar a plataforma no ar automaticamente! 🎉
+
+---
+
+### 2. Criar o Projeto na Railway
+1. Acesse **[railway.app](https://railway.app)** e faça login com seu GitHub.
+2. Clique em **`+ New Project`** ➔ Selecione **`Deploy from GitHub repo`**.
+3. Escolha o repositório **`Plataforma_educacional`**.
+
+---
+
+### 3. Adicionar o Banco de Dados MongoDB na Railway (1 Clique)
+1. No painel do seu projeto na Railway, clique em **`+ Create`** ➔ **`Database`** ➔ Selecione **`Add MongoDB`**.
+2. A Railway criará automaticamente um cluster MongoDB dedicado e injetará a variável de ambiente **`MONGO_URI` / `MONGODB_URI`** no seu serviço web!
+
+---
+
+### 4. Configurar as Variáveis de Ambiente no Serviço Web
+Na aba **Variables** do seu serviço web na Railway, adicione:
+
+| Variável | Valor Recomendado | Descrição |
+| :--- | :--- | :--- |
+| `NODE_ENV` | `production` | Modo de execução em produção |
+| `JWT_SECRET` | `plataforma-edu-secret-key-2026-prod` | Chave de segurança dos tokens JWT |
+| `GEMINI_API_KEY` | *(Sua chave da API do Google Gemini)* | Inteligência Artificial do Mentor |
+| `STRIPE_SECRET_KEY` | *(Sua chave do Stripe `sk_live_...` ou `sk_test_...`)* | Gateway de pagamento R$ 9,90/mês |
+| `STRIPE_WEBHOOK_SECRET` | *(Chave do webhook do Stripe)* | Confirmação automática de pagamentos |
+
+---
+
+### 5. Gerar Domínio Público
+Na aba **Settings** do serviço na Railway:
+- Clique em **`Generate Domain`** para receber seu link oficial com HTTPS (ex: `https://plataforma-educacional-production.up.railway.app`).
+
+---
+
+## 💻 Como Rodar Localmente
+
+```bash
+# 1. Instalar dependências
+npm install
+npm run build
+
+# 2. Iniciar servidor de desenvolvimento
+npm run dev
+```
+- **Frontend**: `http://localhost:5173/`
+- **Backend API**: `http://localhost:4050/`

@@ -8,14 +8,16 @@ import rateLimit from 'express-rate-limit';
 import { apiRouter } from './routes/api.router.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { getDb } from './database/db.js';
+import { connectMongo } from './database/mongo.js';
 
 export function createServer() {
   const app = express();
   const server = http.createServer(app);
   const wss = new WebSocketServer({ server, path: '/ws' });
 
-  // Initialize DB
+  // Initialize DBs (SQLite & MongoDB)
   getDb();
+  connectMongo().catch(() => {});
 
   // Basic Middlewares
   app.use(cors({
