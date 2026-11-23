@@ -92,8 +92,13 @@ export class StripeService {
       throw new Error('SESSION_NOT_FOUND');
     }
 
+    // Com Stripe real configurado, sessao mock nunca ativa nada (evita acesso gratis)
+    if (this.stripe && sessionId.startsWith('cs_test_mock_')) {
+      return { success: false, user: null, message: 'Sessao de teste nao aceita em producao.' };
+    }
+
     // If real stripe, verify payment status
-    if (this.stripe && !sessionId.startsWith('cs_test_mock_')) {
+    if (this.stripe) {
       const session = await this.stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== 'paid' && session.status !== 'complete') {
         return {
@@ -175,6 +180,31 @@ export class StripeService {
         'Arena Blitz de Speed Coding e Certificado de Conclusão'
       ]
     };
+  }
+
+  /** Webhook Stripe: assinatura validada; idempotente via orders(provider,provider_ref). */
+  handleWebhook(rawBody: Buffer, signature: string | undefined): { received: boolean; handled: string } {
+    if (!this.stripe || !config.stripeWebhookSecret) throw new Error('WEBHOOK_NOT_CONFIGURED');
+    if (!signature) throw new Error('BAD_SIGNATURE');
+    let event: Stripe.Event;
+    try {
+      event = this.stripe.webhooks.constructEvent(rawBody, signature, config.stripeWebhookSecret);
+    } catch {
+      throw new Error('BAD_SIGNATURE');
+    }
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const userId = session.metadata?.userId;
+      if (!userId) return { received: true, handled: 'ignored' };
+      this.db.prepare(`UPDATE users SET subscription_status='ACTIVE', plan_id='CADET_PRO_990', updated_at=CURRENT_TIMESTAMP WHERE id=?`).run(userId);
+      const orderId = entitlementService.createOrder(userId, DEFAULT_COURSE_ID, session.amount_total ?? 990, 'stripe', session.id);
+      entitlementService.grant(userId, DEFAULT_COURSE_ID, 'PURCHASE', orderId);
+      return { received: true, handled: 'completed' };
+    }
+    if (event.type === 'charge.refunded' || event.type === 'checkout.session.expired') {
+      return { received: true, handled: 'noted' };
+    }
+    return { received: true, handled: 'ignored' };
   }
 }
 
