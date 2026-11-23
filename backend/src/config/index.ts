@@ -29,6 +29,7 @@ export const config = {
   // Feature flags (rollback: set to "false"). Secure flags default ON.
   flags: {
     enrollmentGuard: process.env.FF_ENROLLMENT_GUARD !== 'false',
+    authRecovery: process.env.FF_AUTH_RECOVERY !== 'false',
     secureAdmin: process.env.FF_SECURE_ADMIN !== 'false',
     // demo endpoints (guest-boot, mock-activate, fallback student user): ON only outside production unless forced
     demoEndpoints: process.env.FF_DEMO_ENDPOINTS

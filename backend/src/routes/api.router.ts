@@ -1,6 +1,7 @@
-import { Router, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { authService } from '../services/auth.service.js';
 import { entitlementService } from '../services/entitlement.service.js';
+import { authTokenService } from '../services/authtoken.service.js';
 import { curriculumService } from '../services/curriculum.service.js';
 import { progressService } from '../services/progress.service.js';
 import { skillService } from '../services/skill.service.js';
@@ -180,6 +181,44 @@ apiRouter.post('/auth/login', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+// Password recovery + email verification (flag FF_AUTH_RECOVERY). No mail provider yet: token is logged, and returned only outside production.
+const recoveryOn = (_req: Request, res: Response, next: NextFunction) =>
+  config.flags.authRecovery ? next() : void res.status(404).json({ error: 'DISABLED' });
+const exposeToken = process.env.NODE_ENV !== 'production';
+
+apiRouter.post('/auth/forgot-password', recoveryOn, (req, res) => {
+  const token = authTokenService.forgot(req.body?.email || '');
+  if (token) console.log(`[auth] reset token for ${req.body.email}: ${token}`);
+  res.json({ ok: true, ...(exposeToken && token ? { devToken: token } : {}) });
+});
+
+apiRouter.post('/auth/reset-password', recoveryOn, (req, res) => {
+  const { token, password } = req.body || {};
+  if (!token || typeof password !== 'string' || password.length < 8) {
+    res.status(400).json({ error: 'INVALID_INPUT', message: 'Token e senha (mín. 8 caracteres) obrigatórios.' });
+    return;
+  }
+  if (!authTokenService.reset(token, password)) {
+    res.status(400).json({ error: 'INVALID_OR_EXPIRED_TOKEN' });
+    return;
+  }
+  res.json({ ok: true });
+});
+
+apiRouter.post('/auth/verify-email/request', recoveryOn, authMiddleware, (req: AuthenticatedRequest, res) => {
+  const token = authTokenService.issue(req.user!.id, 'VERIFY');
+  console.log(`[auth] verify token for ${req.user!.email}: ${token}`);
+  res.json({ ok: true, ...(exposeToken ? { devToken: token } : {}) });
+});
+
+apiRouter.post('/auth/verify-email', recoveryOn, (req, res) => {
+  if (!authTokenService.verify(req.body?.token || '')) {
+    res.status(400).json({ error: 'INVALID_OR_EXPIRED_TOKEN' });
+    return;
+  }
+  res.json({ ok: true });
 });
 
 // Quick guest / auto-boot token generator

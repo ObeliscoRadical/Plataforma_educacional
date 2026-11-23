@@ -46,6 +46,7 @@ export function runMigrations(db: Database.Database) {
     } catch {}
   }
   migrateEnrollments(db);
+  migrateAuthTokens(db);
 }
 
 // Phase 2 (flag FF_ENROLLMENT_GUARD): per-course access. Idempotent; undo with scripts/rollback-enrollments.sql
@@ -98,4 +99,19 @@ export function closeDb() {
     dbInstance.close();
     dbInstance = null;
   }
+}
+
+// Phase 4: password reset + email verification tokens. Idempotent; undo with scripts/rollback-auth-tokens.sql
+export function migrateAuthTokens(db: Database.Database) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS auth_tokens (
+      token_hash TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      kind TEXT NOT NULL, -- RESET, VERIFY
+      expires_at TEXT NOT NULL,
+      used_at TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id, kind);
+  `);
 }
