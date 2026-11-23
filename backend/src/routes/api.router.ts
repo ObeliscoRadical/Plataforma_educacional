@@ -16,10 +16,12 @@ import { adminService } from '../services/admin.service.js';
 import { freeNeuralTts } from '../services/tts.service.js';
 import { stripeService } from '../services/stripe.service.js';
 import { authMiddleware, AuthenticatedRequest } from '../middlewares/auth.middleware.js';
+import { schoolRouter } from './school.router.js';
 import { requireRoles } from '../middlewares/rbac.middleware.js';
 import { config } from '../config/index.js';
 
 export const apiRouter = Router();
+apiRouter.use(schoolRouter);
 
 const getIdParam = (param: any): string => (Array.isArray(param) ? param[0] : String(param));
 
@@ -420,12 +422,12 @@ apiRouter.post('/projects/:id/submit', optionalAuthMiddleware, async (req: Authe
 });
 
 // ==================== VIDEO ENGINE ====================
-apiRouter.get('/video-engine/jobs', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/video-engine/jobs', authMiddleware, requireRoles('ADMIN'), (_req, res) => {
   const jobs = videoEngineService.getJobs();
   res.json({ jobs });
 });
 
-apiRouter.get('/video-engine/jobs/:id', optionalAuthMiddleware, (req, res) => {
+apiRouter.get('/video-engine/jobs/:id', authMiddleware, requireRoles('ADMIN'), (req, res) => {
   const job = videoEngineService.getJobById(getIdParam(req.params.id));
   if (!job) {
     res.status(404).json({ error: 'JOB_NOT_FOUND' });
@@ -434,7 +436,7 @@ apiRouter.get('/video-engine/jobs/:id', optionalAuthMiddleware, (req, res) => {
   res.json({ job });
 });
 
-apiRouter.post('/video-engine/generate', optionalAuthMiddleware, async (req, res, next) => {
+apiRouter.post('/video-engine/generate', authMiddleware, requireRoles('ADMIN'), async (req, res, next) => {
   try {
     const { lessonId } = req.body;
     const result = await videoEngineService.createGenerationJob(lessonId);
@@ -444,7 +446,7 @@ apiRouter.post('/video-engine/generate', optionalAuthMiddleware, async (req, res
   }
 });
 
-apiRouter.post('/video-engine/approve', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/video-engine/approve', authMiddleware, requireRoles('ADMIN'), (req: AuthenticatedRequest, res: Response) => {
   const { lessonId } = req.body;
   const result = videoEngineService.approveAndPublishVideo(lessonId, getUserId(req));
   res.json(result);

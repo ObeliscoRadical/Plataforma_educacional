@@ -1,3 +1,4 @@
+import { auditService } from './audit.service.js';
 import Stripe from 'stripe';
 import { getDb } from '../database/db.js';
 import { config } from '../config/index.js';
@@ -192,6 +193,11 @@ export class StripeService {
     } catch {
       throw new Error('BAD_SIGNATURE');
     }
+    return this.applyEvent(event);
+  }
+
+  /** Applies a verified Stripe event. Split out so tests can call it without signing. */
+  applyEvent(event: Stripe.Event): { received: boolean; handled: string } {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       const userId = session.metadata?.userId;
@@ -199,11 +205,22 @@ export class StripeService {
       this.db.prepare(`UPDATE users SET subscription_status='ACTIVE', plan_id='CADET_PRO_990', updated_at=CURRENT_TIMESTAMP WHERE id=?`).run(userId);
       const orderId = entitlementService.createOrder(userId, DEFAULT_COURSE_ID, session.amount_total ?? 990, 'stripe', session.id);
       entitlementService.grant(userId, DEFAULT_COURSE_ID, 'PURCHASE', orderId);
+      const pi = typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent as any)?.id;
+      if (pi) this.db.prepare('INSERT OR IGNORE INTO payment_refs (payment_intent, order_id) VALUES (?, ?)').run(pi, orderId);
       return { received: true, handled: 'completed' };
     }
-    if (event.type === 'charge.refunded' || event.type === 'checkout.session.expired') {
-      return { received: true, handled: 'noted' };
+    if (event.type === 'charge.refunded') {
+      const charge = event.data.object as Stripe.Charge;
+      const pi = typeof charge.payment_intent === 'string' ? charge.payment_intent : (charge.payment_intent as any)?.id;
+      const ref = pi ? this.db.prepare('SELECT order_id FROM payment_refs WHERE payment_intent = ?').get(pi) as any : null;
+      const order = ref ? this.db.prepare('SELECT user_id, course_id FROM orders WHERE id = ?').get(ref.order_id) as any : null;
+      if (!order) return { received: true, handled: 'ignored' };
+      this.db.prepare("UPDATE orders SET status='REFUNDED' WHERE id = ?").run(ref.order_id);
+      entitlementService.revoke(order.user_id, order.course_id);
+      auditService.log(null, 'REFUND_REVOKE', `order:${ref.order_id}`, { user: order.user_id });
+      return { received: true, handled: 'refunded' };
     }
+    if (event.type === 'checkout.session.expired') return { received: true, handled: 'noted' };
     return { received: true, handled: 'ignored' };
   }
 }

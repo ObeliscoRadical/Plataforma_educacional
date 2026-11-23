@@ -20,6 +20,9 @@ beforeAll(async () => {
   tok = reg.body.token || (await request(app).post('/api/auth/login').send({ emailOrHandle: email, password: 'Senha123!' })).body.token;
   const uid = (db.prepare('SELECT id FROM users WHERE email = ?').get(email) as any).id;
   entitlementService.grant(uid, DEFAULT_COURSE_ID, 'ADMIN');
+  // DB file persists across runs: start with no mentor history so the clamp is deterministic.
+  db.prepare('DELETE FROM mentor_feedbacks WHERE user_id = ?').run(uid);
+  db.prepare('DELETE FROM mentor_sessions WHERE user_id = ?').run(uid);
 });
 
 describe('mentor scaffolding is server-enforced', () => {

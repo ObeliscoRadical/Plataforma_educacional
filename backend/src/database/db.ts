@@ -47,6 +47,7 @@ export function runMigrations(db: Database.Database) {
   }
   migrateEnrollments(db);
   migrateAuthTokens(db);
+  migrateSchoolExtras(db);
 }
 
 // Phase 2 (flag FF_ENROLLMENT_GUARD): per-course access. Idempotent; undo with scripts/rollback-enrollments.sql
@@ -113,5 +114,28 @@ export function migrateAuthTokens(db: Database.Database) {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
     CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id, kind);
+  `);
+}
+
+// Phase 5: audit log, consents (RGPD / 14-day withdrawal), lesson notes, certificates, refund lookup.
+// Idempotent; undo with scripts/rollback-school-extras.sql
+export function migrateSchoolExtras(db: Database.Database) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, actor_id TEXT, action TEXT NOT NULL, target TEXT, meta_json TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+    CREATE TABLE IF NOT EXISTS consents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, kind TEXT NOT NULL, course_id TEXT,
+      accepted_at TEXT DEFAULT CURRENT_TIMESTAMP, ip TEXT);
+    CREATE TABLE IF NOT EXISTS lesson_notes (
+      id TEXT PRIMARY KEY, user_id TEXT NOT NULL, lesson_id TEXT NOT NULL, body TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+    CREATE INDEX IF NOT EXISTS idx_notes_user_lesson ON lesson_notes(user_id, lesson_id);
+    CREATE TABLE IF NOT EXISTS certificates (
+      code TEXT PRIMARY KEY, user_id TEXT NOT NULL, course_id TEXT NOT NULL, issued_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, course_id));
+    CREATE TABLE IF NOT EXISTS payment_refs (payment_intent TEXT PRIMARY KEY, order_id TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS tutor_reports (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, feedback_id TEXT, reason TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP);
   `);
 }
