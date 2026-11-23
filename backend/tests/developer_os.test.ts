@@ -101,6 +101,11 @@ describe('Developer OS: Core Kernel & Subsystems', () => {
     expect(resLevel1.status).toBe(200);
     expect(resLevel1.body.message).toContain('NÍVEL 1: PERGUNTA ORIENTADORA');
 
+    // Level can only escalate one step per message (server-enforced)
+    for (const lv of [2, 3, 4]) {
+      await request(app).post('/api/mentor/chat').set('Authorization', `Bearer ${studentToken}`)
+        .send({ message: 'Preciso de mais ajuda', lessonId: 'lesson_00_01', hintLevel: lv });
+    }
     const resLevel5 = await request(app)
       .post('/api/mentor/chat')
       .set('Authorization', `Bearer ${studentToken}`)
