@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import { apiRouter } from './routes/api.router.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { getDb } from './database/db.js';
+import { config } from './config/index.js';
 import { connectMongo } from './database/mongo.js';
 
 export function createServer() {
@@ -21,7 +22,7 @@ export function createServer() {
 
   // Basic Middlewares
   app.use(cors({
-    origin: '*',
+    origin: config.corsOrigins.length ? config.corsOrigins : true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }));

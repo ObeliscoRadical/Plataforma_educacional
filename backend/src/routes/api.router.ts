@@ -15,6 +15,7 @@ import { freeNeuralTts } from '../services/tts.service.js';
 import { stripeService } from '../services/stripe.service.js';
 import { authMiddleware, AuthenticatedRequest } from '../middlewares/auth.middleware.js';
 import { requireRoles } from '../middlewares/rbac.middleware.js';
+import { config } from '../config/index.js';
 
 export const apiRouter = Router();
 
@@ -22,7 +23,15 @@ const getIdParam = (param: any): string => (Array.isArray(param) ? param[0] : St
 
 // Helper to extract or fallback to default student user ID
 const getUserId = (req: AuthenticatedRequest): string => {
-  return req.user?.id || 'user_student_001';
+  if (req.user?.id) return req.user.id;
+  if (config.flags.demoEndpoints) return 'user_student_001';
+  throw Object.assign(new Error('UNAUTHORIZED'), { status: 401 });
+};
+
+// Blocks demo-only endpoints when FF_DEMO_ENDPOINTS is off (default in production)
+const demoOnly = (_req: any, res: Response, next: () => void) => {
+  if (!config.flags.demoEndpoints) { res.status(404).json({ error: 'NOT_FOUND' }); return; }
+  next();
 };
 
 // Optional auth middleware (identifies user if token is present, defaults to student if absent)
@@ -35,6 +44,14 @@ const optionalAuthMiddleware = (req: AuthenticatedRequest, _res: Response, next:
       req.user = user;
     }
   }
+  next();
+};
+
+// Admin-only guard (ADMIN role verified from JWT). Off only if FF_SECURE_ADMIN=false.
+const adminGuard = (req: AuthenticatedRequest, res: Response, next: () => void) => {
+  if (!config.flags.secureAdmin) return next();
+  if (!req.user) { res.status(401).json({ error: 'UNAUTHORIZED' }); return; }
+  if (req.user.role !== 'ADMIN') { res.status(403).json({ error: 'FORBIDDEN' }); return; }
   next();
 };
 
@@ -90,7 +107,7 @@ apiRouter.post('/stripe/verify-session', optionalAuthMiddleware, async (req: Aut
   }
 });
 
-apiRouter.post('/stripe/mock-activate', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+apiRouter.post('/stripe/mock-activate', demoOnly, optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
   try {
     const userId = getUserId(req);
     const result = await stripeService.mockActivate(userId);
@@ -165,7 +182,7 @@ apiRouter.post('/auth/login', async (req, res, next) => {
 });
 
 // Quick guest / auto-boot token generator
-apiRouter.post('/auth/guest-boot', async (_req, res) => {
+apiRouter.post('/auth/guest-boot', demoOnly, async (_req, res) => {
   const result = await authService.login('student@devos.academy', 'student123');
   res.json(result);
 });
@@ -406,49 +423,49 @@ apiRouter.get('/analytics/metrics', optionalAuthMiddleware, (_req, res) => {
 });
 
 // ==================== ADMIN & GOVERNANCE ====================
-apiRouter.get('/admin/dashboard', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/dashboard', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const metrics = adminService.getDashboardMetrics();
   res.json({ metrics });
 });
 
-apiRouter.get('/admin/users', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/users', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const users = adminService.getAllUsersDetailed();
   res.json({ users });
 });
 
-apiRouter.post('/admin/users/:id/subscription', optionalAuthMiddleware, (req, res) => {
+apiRouter.post('/admin/users/:id/subscription', optionalAuthMiddleware, adminGuard, (req, res) => {
   const { status } = req.body;
   const user = adminService.updateUserSubscription(getIdParam(req.params.id), status);
   res.json({ success: true, user });
 });
 
-apiRouter.post('/admin/users/:id/role', optionalAuthMiddleware, (req, res) => {
+apiRouter.post('/admin/users/:id/role', optionalAuthMiddleware, adminGuard, (req, res) => {
   const { role } = req.body;
   const user = adminService.updateUserRole(getIdParam(req.params.id), role);
   res.json({ success: true, user });
 });
 
-apiRouter.post('/admin/users/:id/reset', optionalAuthMiddleware, (req, res) => {
+apiRouter.post('/admin/users/:id/reset', optionalAuthMiddleware, adminGuard, (req, res) => {
   const result = adminService.resetUserProgress(getIdParam(req.params.id));
   res.json(result);
 });
 
-apiRouter.get('/admin/activity-feed', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/activity-feed', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const feed = adminService.getRecentActivityFeed(30);
   res.json({ feed });
 });
 
-apiRouter.get('/admin/settings', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/settings', optionalAuthMiddleware, adminGuard, (_req, res) => {
   res.json({ settings: adminService.getSettings() });
 });
 
-apiRouter.put('/admin/settings', optionalAuthMiddleware, (req, res) => {
+apiRouter.put('/admin/settings', optionalAuthMiddleware, adminGuard, (req, res) => {
   const { key, value } = req.body;
   const result = adminService.updateSetting(key, value);
   res.json(result);
 });
 
-apiRouter.get('/admin/students', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/students', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const users = adminService.getAllUsersDetailed();
   res.json({ students: users });
 });

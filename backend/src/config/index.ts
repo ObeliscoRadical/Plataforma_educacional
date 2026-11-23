@@ -6,6 +6,7 @@ dotenv.config();
 export const config = {
   port: parseInt(process.env.PORT || '4050', 10),
   jwtSecret: process.env.JWT_SECRET || 'devos-plataforma-educacional-secret-2026',
+  corsOrigins: (process.env.CORS_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean),
   jwtExpiresIn: '7d',
   dbPath: process.env.DB_PATH || path.resolve(process.cwd(), 'developer_os.sqlite'),
   mongoUri: process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL || '',
@@ -24,6 +25,15 @@ export const config = {
   fishAudioVoiceId: process.env.FISHAUDIO_VOICE_ID || process.env.FISH_AUDIO_VOICE_ID || 'ec426c7ea3554caba8a5b077a4c701aa',
   
   nodeEnv: process.env.NODE_ENV || 'development',
+
+  // Feature flags (rollback: set to "false"). Secure flags default ON.
+  flags: {
+    secureAdmin: process.env.FF_SECURE_ADMIN !== 'false',
+    // demo endpoints (guest-boot, mock-activate, fallback student user): ON only outside production unless forced
+    demoEndpoints: process.env.FF_DEMO_ENDPOINTS
+      ? process.env.FF_DEMO_ENDPOINTS === 'true'
+      : (process.env.NODE_ENV || 'development') !== 'production',
+  },
   
   // Stripe & Subscription
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
@@ -41,3 +51,7 @@ export const config = {
     masteryThreshold: 75.0,
   }
 };
+
+if (config.nodeEnv === 'production' && config.jwtSecret === 'devos-plataforma-educacional-secret-2026') {
+  throw new Error('JWT_SECRET must be set in production');
+}
