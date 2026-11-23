@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { getDb } from '../database/db.js';
 import { config } from '../config/index.js';
+import { entitlementService, DEFAULT_COURSE_ID } from './entitlement.service.js';
 
 export class StripeService {
   private stripe: Stripe | null = null;
@@ -112,6 +113,9 @@ export class StripeService {
       WHERE id = ?
     `).run(targetUserId);
 
+    const orderId = entitlementService.createOrder(targetUserId, DEFAULT_COURSE_ID, 990, 'stripe', sessionId);
+    entitlementService.grant(targetUserId, DEFAULT_COURSE_ID, 'PURCHASE', orderId);
+
     const updatedUser = this.db.prepare(`
       SELECT id, email, name, handle, role, avatar, subscription_status, plan_id 
       FROM users 
@@ -133,6 +137,8 @@ export class StripeService {
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(userId);
+
+    entitlementService.grant(userId, DEFAULT_COURSE_ID, 'PURCHASE');
 
     const updatedUser = this.db.prepare(`
       SELECT id, email, name, handle, role, avatar, subscription_status, plan_id 

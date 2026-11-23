@@ -1,5 +1,6 @@
-import { Router, Response } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { authService } from '../services/auth.service.js';
+import { entitlementService } from '../services/entitlement.service.js';
 import { curriculumService } from '../services/curriculum.service.js';
 import { progressService } from '../services/progress.service.js';
 import { skillService } from '../services/skill.service.js';
@@ -193,6 +194,22 @@ apiRouter.get('/auth/me', optionalAuthMiddleware, (req: AuthenticatedRequest, re
   res.json({ user });
 });
 
+
+// Server-side per-course access check (flag FF_ENROLLMENT_GUARD). Lessons marked as preview stay public.
+const requireLessonAccess = (param: string, from: 'params' | 'body' | 'query' = 'params') =>
+  (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!config.flags.enrollmentGuard) return next();
+    const id = (req as any)[from]?.[param];
+    if (!id) return next();
+    if (entitlementService.canAccessLesson(req.user, String(id))) return next();
+    res.status(req.user ? 403 : 401).json({ error: req.user ? 'ENROLLMENT_REQUIRED' : 'UNAUTHORIZED' });
+  };
+const requireModuleAccess = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (!config.flags.enrollmentGuard) return next();
+  if (entitlementService.canAccessModule(req.user, String(req.params.id))) return next();
+  res.status(req.user ? 403 : 401).json({ error: req.user ? 'ENROLLMENT_REQUIRED' : 'UNAUTHORIZED' });
+};
+
 // ==================== CURRICULUM ====================
 apiRouter.get('/curriculum/courses', (_req, res) => {
   res.json({ courses: curriculumService.getCourses() });
@@ -203,7 +220,7 @@ apiRouter.get('/curriculum/modules', optionalAuthMiddleware, (req: Authenticated
   res.json({ modules });
 });
 
-apiRouter.get('/curriculum/modules/:id', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.get('/curriculum/modules/:id', optionalAuthMiddleware, requireModuleAccess, (req: AuthenticatedRequest, res: Response) => {
   const module = curriculumService.getModuleDetails(getIdParam(req.params.id), getUserId(req));
   if (!module) {
     res.status(404).json({ error: 'MODULE_NOT_FOUND' });
@@ -212,7 +229,7 @@ apiRouter.get('/curriculum/modules/:id', optionalAuthMiddleware, (req: Authentic
   res.json({ module });
 });
 
-apiRouter.get('/curriculum/lessons/:id', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.get('/curriculum/lessons/:id', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const lesson = curriculumService.getLessonDetails(getIdParam(req.params.id), getUserId(req));
   if (!lesson) {
     res.status(404).json({ error: 'LESSON_NOT_FOUND' });
@@ -222,17 +239,17 @@ apiRouter.get('/curriculum/lessons/:id', optionalAuthMiddleware, (req: Authentic
 });
 
 // ==================== PROGRESSION ====================
-apiRouter.post('/progress/lesson/:id/start', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/progress/lesson/:id/start', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const result = progressService.startLesson(getUserId(req), getIdParam(req.params.id));
   res.json(result);
 });
 
-apiRouter.post('/progress/lesson/:id/video-watched', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/progress/lesson/:id/video-watched', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const result = progressService.markVideoWatched(getUserId(req), getIdParam(req.params.id));
   res.json(result);
 });
 
-apiRouter.post('/progress/lesson/:id/exercise', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+apiRouter.post('/progress/lesson/:id/exercise', optionalAuthMiddleware, requireLessonAccess('id'), async (req: AuthenticatedRequest, res: Response, next) => {
   try {
     const { exerciseId, code, hintsUsed, maxHintLevel, testCases } = req.body;
     const lessonId = getIdParam(req.params.id);
@@ -273,7 +290,7 @@ apiRouter.post('/progress/lesson/:id/exercise', optionalAuthMiddleware, async (r
   }
 });
 
-apiRouter.post('/progress/lesson/:id/quiz', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/progress/lesson/:id/quiz', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const { quizId, answers } = req.body;
   const result = progressService.submitQuiz(getUserId(req), getIdParam(req.params.id), quizId, answers || {});
   res.json(result);
@@ -297,6 +314,18 @@ apiRouter.post('/sandbox/run', optionalAuthMiddleware, async (req, res, next) =>
   }
 });
 
+// ==================== ENROLLMENTS ====================
+apiRouter.get('/enrollments/me', authMiddleware, (req: AuthenticatedRequest, res: Response) => {
+  res.json({ enrollments: entitlementService.listForUser(req.user!.id) });
+});
+
+apiRouter.post('/enrollments/redeem', authMiddleware, (req: AuthenticatedRequest, res: Response) => {
+  const code = String(req.body?.code || '').trim();
+  if (!code) { res.status(400).json({ error: 'CODE_REQUIRED' }); return; }
+  const r = entitlementService.redeemCode(req.user!.id, code);
+  res.status(r.ok ? 200 : 400).json(r);
+});
+
 // ==================== AI MENTOR ====================
 apiRouter.get('/mentor/history', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   const lessonId = req.query.lessonId ? String(req.query.lessonId) : undefined;
@@ -304,7 +333,7 @@ apiRouter.get('/mentor/history', optionalAuthMiddleware, async (req: Authenticat
   res.json(history);
 });
 
-apiRouter.post('/mentor/chat', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+apiRouter.post('/mentor/chat', optionalAuthMiddleware, requireLessonAccess('lessonId', 'body'), async (req: AuthenticatedRequest, res: Response, next) => {
   try {
     const { message, lessonId, codeSnippet, hintLevel } = req.body;
     if (!message) {

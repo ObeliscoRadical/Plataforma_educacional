@@ -45,6 +45,52 @@ export function runMigrations(db: Database.Database) {
       db.exec(sql);
     } catch {}
   }
+  migrateEnrollments(db);
+}
+
+// Phase 2 (flag FF_ENROLLMENT_GUARD): per-course access. Idempotent; undo with scripts/rollback-enrollments.sql
+export function migrateEnrollments(db: Database.Database) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS enrollments (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      course_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'ACTIVE', -- ACTIVE, REVOKED, REFUNDED
+      source TEXT NOT NULL DEFAULT 'PURCHASE', -- PURCHASE, ACCESS_CODE, ADMIN, LEGACY_SUBSCRIPTION
+      order_id TEXT,
+      granted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      expires_at DATETIME,
+      revoked_at DATETIME,
+      UNIQUE(user_id, course_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_enrollments_user ON enrollments(user_id, status);
+    CREATE TABLE IF NOT EXISTS orders (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      course_id TEXT NOT NULL,
+      amount_cents INTEGER NOT NULL,
+      currency TEXT NOT NULL DEFAULT 'BRL',
+      status TEXT NOT NULL DEFAULT 'PENDING', -- PENDING, PAID, REFUNDED, FAILED
+      provider TEXT NOT NULL,
+      provider_ref TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(provider, provider_ref)
+    );
+    CREATE TABLE IF NOT EXISTS access_codes (
+      code TEXT PRIMARY KEY,
+      course_id TEXT NOT NULL,
+      max_uses INTEGER NOT NULL DEFAULT 1,
+      used_count INTEGER NOT NULL DEFAULT 0,
+      expires_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS preview_lessons (code TEXT PRIMARY KEY);
+    INSERT OR IGNORE INTO preview_lessons (code) VALUES ('00.01');
+    -- legacy paying users keep access
+    INSERT OR IGNORE INTO enrollments (id, user_id, course_id, status, source)
+      SELECT 'legacy_' || id, id, 'course_devos_fullstack', 'ACTIVE', 'LEGACY_SUBSCRIPTION'
+      FROM users WHERE subscription_status = 'ACTIVE';
+  `);
 }
 
 export function closeDb() {
