@@ -57,8 +57,8 @@ export const ProjectsView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12 text-dev-green font-mono text-sm">
-        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+      <div className="flex items-center justify-center p-12 text-dev-green text-sm">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2"></span>
         Carregando matriz de projetos progressivos...
       </div>
     );
@@ -68,14 +68,14 @@ export const ProjectsView: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-dev-surface border border-dev-border rounded-lg p-5">
-        <div className="flex items-center gap-2 text-xs font-mono text-dev-green mb-1">
+        <div className="flex items-center gap-2 text-xs text-dev-green mb-1">
           <FolderGit2 className="w-4 h-4" />
           <span>PROJECT HUB // PRODUCTION DELIVERABLES MATRIX</span>
         </div>
-        <h1 className="text-lg font-bold font-mono text-white">
+        <h1 className="text-lg font-bold text-white">
           Projetos de Engenharia Progressivos
         </h1>
-        <p className="text-xs font-mono text-dev-muted mt-1">
+        <p className="text-xs text-dev-muted mt-1">
           Demonstração de competência em nível de portfólio real com deploy contínuo e code review automatizado pelo Mentor IA.
         </p>
       </div>
@@ -91,7 +91,7 @@ export const ProjectsView: React.FC = () => {
               <div
                 key={proj.id}
                 onClick={() => setSelectedProject(proj)}
-                className={`p-3 rounded-lg border cursor-pointer font-mono text-xs transition-all ${
+                className={`p-3 rounded-lg border cursor-pointer text-xs transition-all ${
                   isSelected
                     ? 'border-dev-green bg-dev-green/10'
                     : isApproved
@@ -121,11 +121,11 @@ export const ProjectsView: React.FC = () => {
           {selectedProject && (
             <>
               <div className="pb-4 border-b border-dev-border">
-                <div className="flex items-center gap-2 text-xs font-mono text-dev-cyan mb-1">
+                <div className="flex items-center gap-2 text-xs text-dev-cyan mb-1">
                   <Flame className="w-3.5 h-3.5 text-dev-amber" />
                   <span>TIER {selectedProject.tier} DELIVERABLE</span>
                 </div>
-                <h2 className="text-sm font-bold font-mono text-white mb-2">
+                <h2 className="text-sm font-bold text-white mb-2">
                   {selectedProject.title}
                 </h2>
                 <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export const ProjectsView: React.FC = () => {
                     href={selectedProject.template_repo_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-mono text-dev-cyan hover:underline"
+                    className="inline-flex items-center gap-1 text-xs text-dev-cyan hover:underline"
                   >
                     <span>[ Template Repo ]</span>
                     <ExternalLink className="w-3 h-3" />
@@ -143,10 +143,10 @@ export const ProjectsView: React.FC = () => {
 
               {/* Rubric Criteria */}
               <div>
-                <div className="text-xs font-mono text-dev-green font-bold mb-2">
+                <div className="text-xs text-dev-green font-bold mb-2">
                   // CRITÉRIOS DA RUBRICA DE AVALIAÇÃO DO MENTOR
                 </div>
-                <div className="space-y-1.5 font-mono text-xs">
+                <div className="space-y-1.5 text-xs">
                   {selectedProject.rubric?.map((r, i) => (
                     <div key={i} className="p-2.5 rounded bg-dev-bg border border-dev-border flex items-start justify-between gap-2">
                       <div>
@@ -161,7 +161,7 @@ export const ProjectsView: React.FC = () => {
 
               {/* Mentor Review if already submitted */}
               {selectedProject.submission?.mentorReview && (
-                <div className="p-4 rounded-lg bg-dev-bg border border-dev-cyan/40 space-y-2 font-mono text-xs">
+                <div className="p-4 rounded-lg bg-dev-bg border border-dev-cyan/40 space-y-2 text-xs">
                   <div className="flex items-center gap-2 text-dev-cyan font-bold">
                     <Bot className="w-4 h-4" />
                     <span>AVALIAÇÃO DO MENTOR IA (Nota: {selectedProject.submission.grade}%)</span>
@@ -173,7 +173,7 @@ export const ProjectsView: React.FC = () => {
               )}
 
               {/* Submission Form */}
-              <form onSubmit={handleSubmit} className="space-y-3 pt-3 border-t border-dev-border font-mono text-xs">
+              <form onSubmit={handleSubmit} className="space-y-3 pt-3 border-t border-dev-border text-xs">
                 <div className="text-dev-green font-bold">// SUBMETER ENTREGÁVEL</div>
                 <div>
                   <label className="block text-dev-muted text-[11px] mb-1">Repositório GitHub (com Conventional Commits)</label>
@@ -202,7 +202,7 @@ export const ProjectsView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-2.5 bg-dev-green text-black font-mono font-bold text-xs rounded hover:bg-dev-greenDim transition-colors shadow-glow-green flex items-center justify-center gap-2"
+                  className="w-full py-2.5 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-colors flex items-center justify-center gap-2"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>{submitting ? 'EVALUATING ARCHITECTURE...' : '[ ENVIAR PARA CODE REVIEW DO MENTOR ]'}</span>

@@ -73,7 +73,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
         <div className="flex items-center justify-between px-4 py-3 bg-dev-bg border-b border-dev-border">
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-dev-green" />
-            <span className="text-xs font-mono font-bold text-white">
+            <span className="text-xs font-bold text-white">
               DEVELOPER OS // TERMINAL ACCESS
             </span>
           </div>
@@ -90,9 +90,9 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
           <button
             type="button"
             onClick={() => { setActiveTab('LOGIN'); setError(''); }}
-            className={`py-2 text-xs font-mono font-bold rounded transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 text-xs font-bold rounded transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'LOGIN'
-                ? 'bg-dev-green text-black shadow-glow-green'
+                ? 'bg-dev-green text-dev-bg'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -102,9 +102,9 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
           <button
             type="button"
             onClick={() => { setActiveTab('REGISTER'); setError(''); }}
-            className={`py-2 text-xs font-mono font-bold rounded transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 text-xs font-bold rounded transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'REGISTER'
-                ? 'bg-dev-cyan text-black shadow-glow-cyan'
+                ? 'bg-dev-cyan text-dev-bg'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -116,20 +116,20 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
         {/* Content Body */}
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/40 text-rose-400 text-xs font-mono flex items-start gap-2">
+            <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/40 text-rose-400 text-xs flex items-start gap-2">
               <span className="font-bold shrink-0">[!]</span>
               <span>{error}</span>
             </div>
           )}
 
           {activeTab === 'REGISTER' && (
-            <div className="mb-4 p-2.5 rounded-lg bg-dev-cyan/10 border border-dev-cyan/30 text-dev-cyan text-[11px] font-mono flex items-center gap-2">
+            <div className="mb-4 p-2.5 rounded-lg bg-dev-cyan/10 border border-dev-cyan/30 text-dev-cyan text-[11px] flex items-center gap-2">
               <Sparkles className="w-4 h-4 shrink-0" />
               <span>Crie sua conta para liberar a formação completa (R$ 9,90/mês).</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3.5 font-mono">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {activeTab === 'LOGIN' ? (
               <>
                 <div>
@@ -234,10 +234,10 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
             <button
               type="submit"
               disabled={loading}
-              className={`w-full mt-2 py-2.5 px-4 font-mono font-bold text-xs rounded transition-all shadow-terminal flex items-center justify-center gap-2 ${
+              className={`w-full mt-2 py-2.5 px-4 font-bold text-xs rounded transition-all shadow-terminal flex items-center justify-center gap-2 ${
                 activeTab === 'LOGIN'
-                  ? 'bg-dev-green text-black hover:bg-dev-greenDim shadow-glow-green'
-                  : 'bg-dev-cyan text-black hover:bg-cyan-300 shadow-glow-cyan'
+                  ? 'bg-dev-green text-dev-bg hover:bg-dev-greenDim'
+                  : 'bg-dev-cyan text-dev-bg hover:bg-cyan-300'
               }`}
             >
               {loading ? (
@@ -255,21 +255,21 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
 
           {/* Quick Demo Logins */}
           <div className="mt-5 pt-4 border-t border-dev-border">
-            <div className="text-[10px] font-mono text-zinc-400 mb-2 text-center">
+            <div className="text-[10px] text-zinc-400 mb-2 text-center">
               // ACESSO RÁPIDO PARA TESTES
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={handleQuickStudent}
-                className="px-2.5 py-1.5 rounded bg-black border border-dev-border hover:border-dev-green text-[11px] font-mono text-zinc-300 hover:text-white transition-colors"
+                className="px-2.5 py-1.5 rounded bg-black border border-dev-border hover:border-dev-green text-[11px] text-zinc-300 hover:text-white transition-colors"
               >
                 Cadet Student (Demo)
               </button>
               <button
                 type="button"
                 onClick={handleQuickAdmin}
-                className="px-2.5 py-1.5 rounded bg-black border border-dev-border hover:border-dev-cyan text-[11px] font-mono text-zinc-300 hover:text-white transition-colors"
+                className="px-2.5 py-1.5 rounded bg-black border border-dev-border hover:border-dev-cyan text-[11px] text-zinc-300 hover:text-white transition-colors"
               >
                 Lead Admin (Master)
               </button>

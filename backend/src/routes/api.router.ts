@@ -1,5 +1,7 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { authService } from '../services/auth.service.js';
+import { entitlementService } from '../services/entitlement.service.js';
+import { authTokenService } from '../services/authtoken.service.js';
 import { curriculumService } from '../services/curriculum.service.js';
 import { progressService } from '../services/progress.service.js';
 import { skillService } from '../services/skill.service.js';
@@ -14,15 +16,26 @@ import { adminService } from '../services/admin.service.js';
 import { freeNeuralTts } from '../services/tts.service.js';
 import { stripeService } from '../services/stripe.service.js';
 import { authMiddleware, AuthenticatedRequest } from '../middlewares/auth.middleware.js';
+import { schoolRouter } from './school.router.js';
 import { requireRoles } from '../middlewares/rbac.middleware.js';
+import { config } from '../config/index.js';
 
 export const apiRouter = Router();
+apiRouter.use(schoolRouter);
 
 const getIdParam = (param: any): string => (Array.isArray(param) ? param[0] : String(param));
 
 // Helper to extract or fallback to default student user ID
 const getUserId = (req: AuthenticatedRequest): string => {
-  return req.user?.id || 'user_student_001';
+  if (req.user?.id) return req.user.id;
+  if (config.flags.demoEndpoints) return 'user_student_001';
+  throw Object.assign(new Error('UNAUTHORIZED'), { status: 401 });
+};
+
+// Blocks demo-only endpoints when FF_DEMO_ENDPOINTS is off (default in production)
+const demoOnly = (_req: any, res: Response, next: () => void) => {
+  if (!config.flags.demoEndpoints) { res.status(404).json({ error: 'NOT_FOUND' }); return; }
+  next();
 };
 
 // Optional auth middleware (identifies user if token is present, defaults to student if absent)
@@ -35,6 +48,14 @@ const optionalAuthMiddleware = (req: AuthenticatedRequest, _res: Response, next:
       req.user = user;
     }
   }
+  next();
+};
+
+// Admin-only guard (ADMIN role verified from JWT). Off only if FF_SECURE_ADMIN=false.
+const adminGuard = (req: AuthenticatedRequest, res: Response, next: () => void) => {
+  if (!config.flags.secureAdmin) return next();
+  if (!req.user) { res.status(401).json({ error: 'UNAUTHORIZED' }); return; }
+  if (req.user.role !== 'ADMIN') { res.status(403).json({ error: 'FORBIDDEN' }); return; }
   next();
 };
 
@@ -90,7 +111,7 @@ apiRouter.post('/stripe/verify-session', optionalAuthMiddleware, async (req: Aut
   }
 });
 
-apiRouter.post('/stripe/mock-activate', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+apiRouter.post('/stripe/mock-activate', demoOnly, optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
   try {
     const userId = getUserId(req);
     const result = await stripeService.mockActivate(userId);
@@ -164,8 +185,46 @@ apiRouter.post('/auth/login', async (req, res, next) => {
   }
 });
 
+// Password recovery + email verification (flag FF_AUTH_RECOVERY). No mail provider yet: token is logged, and returned only outside production.
+const recoveryOn = (_req: Request, res: Response, next: NextFunction) =>
+  config.flags.authRecovery ? next() : void res.status(404).json({ error: 'DISABLED' });
+const exposeToken = process.env.NODE_ENV !== 'production';
+
+apiRouter.post('/auth/forgot-password', recoveryOn, (req, res) => {
+  const token = authTokenService.forgot(req.body?.email || '');
+  if (token) console.log(`[auth] reset token for ${req.body.email}: ${token}`);
+  res.json({ ok: true, ...(exposeToken && token ? { devToken: token } : {}) });
+});
+
+apiRouter.post('/auth/reset-password', recoveryOn, (req, res) => {
+  const { token, password } = req.body || {};
+  if (!token || typeof password !== 'string' || password.length < 8) {
+    res.status(400).json({ error: 'INVALID_INPUT', message: 'Token e senha (mín. 8 caracteres) obrigatórios.' });
+    return;
+  }
+  if (!authTokenService.reset(token, password)) {
+    res.status(400).json({ error: 'INVALID_OR_EXPIRED_TOKEN' });
+    return;
+  }
+  res.json({ ok: true });
+});
+
+apiRouter.post('/auth/verify-email/request', recoveryOn, authMiddleware, (req: AuthenticatedRequest, res) => {
+  const token = authTokenService.issue(req.user!.id, 'VERIFY');
+  console.log(`[auth] verify token for ${req.user!.email}: ${token}`);
+  res.json({ ok: true, ...(exposeToken ? { devToken: token } : {}) });
+});
+
+apiRouter.post('/auth/verify-email', recoveryOn, (req, res) => {
+  if (!authTokenService.verify(req.body?.token || '')) {
+    res.status(400).json({ error: 'INVALID_OR_EXPIRED_TOKEN' });
+    return;
+  }
+  res.json({ ok: true });
+});
+
 // Quick guest / auto-boot token generator
-apiRouter.post('/auth/guest-boot', async (_req, res) => {
+apiRouter.post('/auth/guest-boot', demoOnly, async (_req, res) => {
   const result = await authService.login('student@devos.academy', 'student123');
   res.json(result);
 });
@@ -175,6 +234,22 @@ apiRouter.get('/auth/me', optionalAuthMiddleware, (req: AuthenticatedRequest, re
   const user = authService.getUserById(userId);
   res.json({ user });
 });
+
+
+// Server-side per-course access check (flag FF_ENROLLMENT_GUARD). Lessons marked as preview stay public.
+const requireLessonAccess = (param: string, from: 'params' | 'body' | 'query' = 'params') =>
+  (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!config.flags.enrollmentGuard) return next();
+    const id = (req as any)[from]?.[param];
+    if (!id) return next();
+    if (entitlementService.canAccessLesson(req.user, String(id))) return next();
+    res.status(req.user ? 403 : 401).json({ error: req.user ? 'ENROLLMENT_REQUIRED' : 'UNAUTHORIZED' });
+  };
+const requireModuleAccess = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (!config.flags.enrollmentGuard) return next();
+  if (entitlementService.canAccessModule(req.user, String(req.params.id))) return next();
+  res.status(req.user ? 403 : 401).json({ error: req.user ? 'ENROLLMENT_REQUIRED' : 'UNAUTHORIZED' });
+};
 
 // ==================== CURRICULUM ====================
 apiRouter.get('/curriculum/courses', (_req, res) => {
@@ -186,7 +261,7 @@ apiRouter.get('/curriculum/modules', optionalAuthMiddleware, (req: Authenticated
   res.json({ modules });
 });
 
-apiRouter.get('/curriculum/modules/:id', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.get('/curriculum/modules/:id', optionalAuthMiddleware, requireModuleAccess, (req: AuthenticatedRequest, res: Response) => {
   const module = curriculumService.getModuleDetails(getIdParam(req.params.id), getUserId(req));
   if (!module) {
     res.status(404).json({ error: 'MODULE_NOT_FOUND' });
@@ -195,7 +270,7 @@ apiRouter.get('/curriculum/modules/:id', optionalAuthMiddleware, (req: Authentic
   res.json({ module });
 });
 
-apiRouter.get('/curriculum/lessons/:id', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.get('/curriculum/lessons/:id', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const lesson = curriculumService.getLessonDetails(getIdParam(req.params.id), getUserId(req));
   if (!lesson) {
     res.status(404).json({ error: 'LESSON_NOT_FOUND' });
@@ -205,17 +280,17 @@ apiRouter.get('/curriculum/lessons/:id', optionalAuthMiddleware, (req: Authentic
 });
 
 // ==================== PROGRESSION ====================
-apiRouter.post('/progress/lesson/:id/start', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/progress/lesson/:id/start', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const result = progressService.startLesson(getUserId(req), getIdParam(req.params.id));
   res.json(result);
 });
 
-apiRouter.post('/progress/lesson/:id/video-watched', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/progress/lesson/:id/video-watched', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const result = progressService.markVideoWatched(getUserId(req), getIdParam(req.params.id));
   res.json(result);
 });
 
-apiRouter.post('/progress/lesson/:id/exercise', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+apiRouter.post('/progress/lesson/:id/exercise', optionalAuthMiddleware, requireLessonAccess('id'), async (req: AuthenticatedRequest, res: Response, next) => {
   try {
     const { exerciseId, code, hintsUsed, maxHintLevel, testCases } = req.body;
     const lessonId = getIdParam(req.params.id);
@@ -256,7 +331,7 @@ apiRouter.post('/progress/lesson/:id/exercise', optionalAuthMiddleware, async (r
   }
 });
 
-apiRouter.post('/progress/lesson/:id/quiz', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/progress/lesson/:id/quiz', optionalAuthMiddleware, requireLessonAccess('id'), (req: AuthenticatedRequest, res: Response) => {
   const { quizId, answers } = req.body;
   const result = progressService.submitQuiz(getUserId(req), getIdParam(req.params.id), quizId, answers || {});
   res.json(result);
@@ -280,6 +355,18 @@ apiRouter.post('/sandbox/run', optionalAuthMiddleware, async (req, res, next) =>
   }
 });
 
+// ==================== ENROLLMENTS ====================
+apiRouter.get('/enrollments/me', authMiddleware, (req: AuthenticatedRequest, res: Response) => {
+  res.json({ enrollments: entitlementService.listForUser(req.user!.id) });
+});
+
+apiRouter.post('/enrollments/redeem', authMiddleware, (req: AuthenticatedRequest, res: Response) => {
+  const code = String(req.body?.code || '').trim();
+  if (!code) { res.status(400).json({ error: 'CODE_REQUIRED' }); return; }
+  const r = entitlementService.redeemCode(req.user!.id, code);
+  res.status(r.ok ? 200 : 400).json(r);
+});
+
 // ==================== AI MENTOR ====================
 apiRouter.get('/mentor/history', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   const lessonId = req.query.lessonId ? String(req.query.lessonId) : undefined;
@@ -287,7 +374,7 @@ apiRouter.get('/mentor/history', optionalAuthMiddleware, async (req: Authenticat
   res.json(history);
 });
 
-apiRouter.post('/mentor/chat', optionalAuthMiddleware, async (req: AuthenticatedRequest, res: Response, next) => {
+apiRouter.post('/mentor/chat', optionalAuthMiddleware, requireLessonAccess('lessonId', 'body'), async (req: AuthenticatedRequest, res: Response, next) => {
   try {
     const { message, lessonId, codeSnippet, hintLevel } = req.body;
     if (!message) {
@@ -335,12 +422,12 @@ apiRouter.post('/projects/:id/submit', optionalAuthMiddleware, async (req: Authe
 });
 
 // ==================== VIDEO ENGINE ====================
-apiRouter.get('/video-engine/jobs', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/video-engine/jobs', authMiddleware, requireRoles('ADMIN'), (_req, res) => {
   const jobs = videoEngineService.getJobs();
   res.json({ jobs });
 });
 
-apiRouter.get('/video-engine/jobs/:id', optionalAuthMiddleware, (req, res) => {
+apiRouter.get('/video-engine/jobs/:id', authMiddleware, requireRoles('ADMIN'), (req, res) => {
   const job = videoEngineService.getJobById(getIdParam(req.params.id));
   if (!job) {
     res.status(404).json({ error: 'JOB_NOT_FOUND' });
@@ -349,7 +436,7 @@ apiRouter.get('/video-engine/jobs/:id', optionalAuthMiddleware, (req, res) => {
   res.json({ job });
 });
 
-apiRouter.post('/video-engine/generate', optionalAuthMiddleware, async (req, res, next) => {
+apiRouter.post('/video-engine/generate', authMiddleware, requireRoles('ADMIN'), async (req, res, next) => {
   try {
     const { lessonId } = req.body;
     const result = await videoEngineService.createGenerationJob(lessonId);
@@ -359,7 +446,7 @@ apiRouter.post('/video-engine/generate', optionalAuthMiddleware, async (req, res
   }
 });
 
-apiRouter.post('/video-engine/approve', optionalAuthMiddleware, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/video-engine/approve', authMiddleware, requireRoles('ADMIN'), (req: AuthenticatedRequest, res: Response) => {
   const { lessonId } = req.body;
   const result = videoEngineService.approveAndPublishVideo(lessonId, getUserId(req));
   res.json(result);
@@ -406,49 +493,49 @@ apiRouter.get('/analytics/metrics', optionalAuthMiddleware, (_req, res) => {
 });
 
 // ==================== ADMIN & GOVERNANCE ====================
-apiRouter.get('/admin/dashboard', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/dashboard', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const metrics = adminService.getDashboardMetrics();
   res.json({ metrics });
 });
 
-apiRouter.get('/admin/users', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/users', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const users = adminService.getAllUsersDetailed();
   res.json({ users });
 });
 
-apiRouter.post('/admin/users/:id/subscription', optionalAuthMiddleware, (req, res) => {
+apiRouter.post('/admin/users/:id/subscription', optionalAuthMiddleware, adminGuard, (req, res) => {
   const { status } = req.body;
   const user = adminService.updateUserSubscription(getIdParam(req.params.id), status);
   res.json({ success: true, user });
 });
 
-apiRouter.post('/admin/users/:id/role', optionalAuthMiddleware, (req, res) => {
+apiRouter.post('/admin/users/:id/role', optionalAuthMiddleware, adminGuard, (req, res) => {
   const { role } = req.body;
   const user = adminService.updateUserRole(getIdParam(req.params.id), role);
   res.json({ success: true, user });
 });
 
-apiRouter.post('/admin/users/:id/reset', optionalAuthMiddleware, (req, res) => {
+apiRouter.post('/admin/users/:id/reset', optionalAuthMiddleware, adminGuard, (req, res) => {
   const result = adminService.resetUserProgress(getIdParam(req.params.id));
   res.json(result);
 });
 
-apiRouter.get('/admin/activity-feed', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/activity-feed', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const feed = adminService.getRecentActivityFeed(30);
   res.json({ feed });
 });
 
-apiRouter.get('/admin/settings', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/settings', optionalAuthMiddleware, adminGuard, (_req, res) => {
   res.json({ settings: adminService.getSettings() });
 });
 
-apiRouter.put('/admin/settings', optionalAuthMiddleware, (req, res) => {
+apiRouter.put('/admin/settings', optionalAuthMiddleware, adminGuard, (req, res) => {
   const { key, value } = req.body;
   const result = adminService.updateSetting(key, value);
   res.json(result);
 });
 
-apiRouter.get('/admin/students', optionalAuthMiddleware, (_req, res) => {
+apiRouter.get('/admin/students', optionalAuthMiddleware, adminGuard, (_req, res) => {
   const users = adminService.getAllUsersDetailed();
   res.json({ students: users });
 });

@@ -61,14 +61,14 @@ export const VideoStudio: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-dev-surface border border-dev-border rounded-lg p-5">
-        <div className="flex items-center gap-2 text-xs font-mono text-purple-400 mb-1">
+        <div className="flex items-center gap-2 text-xs text-purple-400 mb-1">
           <Film className="w-4 h-4" />
           <span>VIDEO GENERATION ENGINE // MODULAR ADAPTER PIPELINE</span>
         </div>
-        <h1 className="text-lg font-bold font-mono text-white">
+        <h1 className="text-lg font-bold text-white">
           Estúdio de Geração & Validação de Videoaulas
         </h1>
-        <p className="text-xs font-mono text-dev-muted mt-1">
+        <p className="text-xs text-dev-muted mt-1">
           Pipeline: Script → Narration → Screen Demo Plan → Visual Assets → Composition → Review Required → Administrative Approval.
         </p>
       </div>
@@ -80,12 +80,12 @@ export const VideoStudio: React.FC = () => {
           value={lessonIdInput}
           onChange={(e) => setLessonIdInput(e.target.value)}
           placeholder="ID da aula (ex: lesson_00_01, lesson_05_01)"
-          className="flex-1 px-3 py-2 bg-dev-bg border border-dev-border rounded font-mono text-xs text-white outline-none focus:border-purple-400"
+          className="flex-1 px-3 py-2 bg-dev-bg border border-dev-border rounded text-xs text-white outline-none focus:border-purple-400"
         />
         <button
           onClick={handleCreateJob}
           disabled={generating}
-          className="px-4 py-2 bg-purple-500 text-black font-mono font-bold text-xs rounded hover:bg-purple-400 transition-colors shrink-0"
+          className="px-4 py-2 bg-purple-500 text-dev-bg font-bold text-xs rounded hover:bg-purple-400 transition-colors shrink-0"
         >
           {generating ? 'DISPATCHING PIPELINE...' : '[ GENERATE VIDEO JOB ]'}
         </button>
@@ -101,7 +101,7 @@ export const VideoStudio: React.FC = () => {
                 const res = await api.getVideoJob(j.id);
                 setSelectedJob(res.job);
               }}
-              className={`p-3 rounded-lg border cursor-pointer font-mono text-xs transition-all ${
+              className={`p-3 rounded-lg border cursor-pointer text-xs transition-all ${
                 selectedJob?.id === j.id ? 'border-purple-400 bg-purple-500/10' : 'border-dev-border bg-dev-surface'
               }`}
             >
@@ -119,7 +119,7 @@ export const VideoStudio: React.FC = () => {
         <div className="lg:col-span-7 bg-dev-surface border border-dev-border rounded-lg p-5 space-y-4">
           {selectedJob ? (
             <>
-              <div className="flex items-center justify-between pb-3 border-b border-dev-border font-mono text-xs">
+              <div className="flex items-center justify-between pb-3 border-b border-dev-border text-xs">
                 <span className="text-purple-400 font-bold">JOB: {selectedJob.id}</span>
                 <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold">
                   {selectedJob.status}
@@ -127,13 +127,13 @@ export const VideoStudio: React.FC = () => {
               </div>
 
               {/* Execution Logs */}
-              <div className="p-3 bg-dev-bg border border-dev-border rounded font-mono text-[11px] text-zinc-300 whitespace-pre-wrap max-h-40 overflow-y-auto">
+              <div className="p-3 bg-dev-bg border border-dev-border rounded text-[11px] text-zinc-300 whitespace-pre-wrap max-h-40 overflow-y-auto">
                 {selectedJob.logs}
               </div>
 
               {/* Script Scenes Preview */}
               {selectedJob.script?.scenes && (
-                <div className="space-y-2 font-mono text-xs">
+                <div className="space-y-2 text-xs">
                   <div className="text-dev-green font-bold">// ROTEIRO GERADO PELO MOTOR</div>
                   {selectedJob.script.scenes.map((s: any, idx: number) => (
                     <div key={idx} className="p-2.5 rounded bg-dev-bg border border-dev-border text-[11px]">
@@ -149,7 +149,7 @@ export const VideoStudio: React.FC = () => {
                 <button
                   onClick={() => handleApprove(selectedJob.lesson_id)}
                   disabled={approving}
-                  className="w-full py-2.5 bg-dev-green text-black font-mono font-bold text-xs rounded hover:bg-dev-greenDim transition-colors shadow-glow-green flex items-center justify-center gap-2"
+                  className="w-full py-2.5 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-colors flex items-center justify-center gap-2"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   <span>[ APROVAR E PUBLICAR VÍDEO NO CURRÍCULO ]</span>
@@ -157,7 +157,7 @@ export const VideoStudio: React.FC = () => {
               )}
             </>
           ) : (
-            <div className="text-center text-xs font-mono text-dev-muted">
+            <div className="text-center text-xs text-dev-muted">
               Selecione um job de vídeo para inspecionar.
             </div>
           )}

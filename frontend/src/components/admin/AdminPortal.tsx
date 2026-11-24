@@ -112,24 +112,24 @@ export const AdminPortal: React.FC = () => {
 
   if (loading && !metrics) {
     return (
-      <div className="flex items-center justify-center p-16 text-dev-green font-mono text-sm">
-        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+      <div className="flex items-center justify-center p-16 text-dev-green text-sm">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2"></span>
         Conectando ao Kernel de Administração do Developer OS...
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 font-mono">
+    <div className="space-y-6">
       {/* Top Header */}
       <div className="bg-dev-surface border border-dev-border rounded-xl p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-dev-border">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-dev-green mb-1">
+            <div className="flex items-center gap-2 text-xs text-dev-green mb-1">
               <ShieldCheck className="w-4 h-4" />
               <span>COMMAND & CONTROL CENTER // ADMIN OS v1.0</span>
             </div>
-            <h1 className="text-lg font-bold font-mono text-white flex items-center gap-2">
+            <h1 className="text-lg font-bold text-white flex items-center gap-2">
               <span>Painel Executivo de Governança & Mensalidades</span>
               <span className="text-xs px-2 py-0.5 rounded bg-dev-green/10 text-dev-green border border-dev-green/30 font-bold">
                 ROOT PRIVILEGES
@@ -149,7 +149,7 @@ export const AdminPortal: React.FC = () => {
         {/* 4 Financial & User KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {/* MRR Card */}
-          <div className="p-4 rounded-lg bg-black/60 border border-dev-green/40 shadow-glow-green space-y-1">
+          <div className="p-4 rounded-lg bg-black/60 border border-dev-green/40 space-y-1">
             <div className="flex items-center justify-between text-zinc-400 text-[11px]">
               <span>RECEITA RECORRENTE (MRR)</span>
               <DollarSign className="w-4 h-4 text-dev-green" />
@@ -284,7 +284,7 @@ export const AdminPortal: React.FC = () => {
                   onClick={() => setStatusFilter(filter)}
                   className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all ${
                     statusFilter === filter
-                      ? 'bg-dev-green text-black shadow-glow-green'
+                      ? 'bg-dev-green text-dev-bg'
                       : 'bg-black border border-dev-border text-zinc-400 hover:text-white'
                   }`}
                 >
@@ -296,7 +296,7 @@ export const AdminPortal: React.FC = () => {
 
           {/* Users Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left font-mono text-xs">
+            <table className="w-full text-left text-xs">
               <thead className="text-zinc-400 border-b border-dev-border text-[11px] bg-black/40">
                 <tr>
                   <th className="p-3">ALUNO / IDENTIFICAÇÃO</th>
@@ -450,7 +450,7 @@ export const AdminPortal: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-right font-mono">
+              <div className="text-right">
                 <div className="text-xs text-zinc-400">RECEITA ATUAL ESTIMADA</div>
                 <div className="text-xl font-bold text-emerald-400">
                   R$ {(metrics?.monthlyRecurringRevenue || 0).toFixed(2).replace('.', ',')} / mês
@@ -540,7 +540,7 @@ export const AdminPortal: React.FC = () => {
       {/* ========================================================================= */}
       {activeTab === 'SETTINGS' && (
         <div className="bg-dev-surface border border-dev-border rounded-xl p-5 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-bold pb-2 border-b border-dev-border">
+          <div className="flex items-center gap-2 text-xs text-amber-400 font-bold pb-2 border-b border-dev-border">
             <Settings className="w-4 h-4" />
             <span>PESOS DAS COMPETÊNCIAS E REGRAS DE GOVERNANÇA</span>
           </div>

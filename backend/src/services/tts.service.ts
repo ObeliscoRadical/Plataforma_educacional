@@ -21,6 +21,7 @@ export class FreeNeuralTtsService {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${config.fishAudioApiKey}`,
+            'model': config.fishAudioModel,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({

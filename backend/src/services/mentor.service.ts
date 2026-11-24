@@ -85,7 +85,9 @@ export class MentorService {
       }
     }
 
-    const hintLevel = Math.min(5, Math.max(1, req.hintLevel || 1));
+    // Server-side scaffolding: level can rise only 1 step per prior user message, so the full solution (level 5) is not one request away.
+    const prior = (this.db.prepare("SELECT COUNT(*) c FROM mentor_feedbacks WHERE session_id = ? AND sender = 'USER'").get(session.id) as any).c as number;
+    const hintLevel = Math.min(5, prior + 1, Math.max(1, req.hintLevel || 1));
 
     // 2. Record User Message
     this.db.prepare(`

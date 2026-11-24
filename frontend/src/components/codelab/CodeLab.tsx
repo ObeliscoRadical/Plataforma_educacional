@@ -145,7 +145,7 @@ export const CodeLab: React.FC = () => {
           <button
             onClick={handleSubmitSolution}
             disabled={isSubmitting}
-            className="px-4 py-1.5 rounded bg-dev-green text-black font-mono font-bold text-xs hover:bg-dev-greenDim transition-colors shadow-glow-green flex items-center gap-1.5"
+            className="px-4 py-1.5 rounded bg-dev-green text-dev-bg font-mono font-bold text-xs hover:bg-dev-greenDim transition-colors flex items-center gap-1.5"
           >
             <Check className="w-3.5 h-3.5 stroke-[3]" />
             <span>{isSubmitting ? 'EVALUATING...' : '[ SUBMIT SOLUTION ]'}</span>
@@ -165,7 +165,7 @@ export const CodeLab: React.FC = () => {
             {submissionFeedback.progress?.message}
           </div>
           {submissionFeedback.progress?.lessonCompleted && (
-            <span className="px-2.5 py-1 rounded bg-dev-green text-black font-bold uppercase text-[10px]">
+            <span className="px-2.5 py-1 rounded bg-dev-green text-dev-bg font-bold uppercase text-[10px]">
               MASTERED
             </span>
           )}
@@ -188,7 +188,7 @@ export const CodeLab: React.FC = () => {
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="w-full h-full bg-transparent text-dev-text font-mono text-xs resize-none outline-none leading-relaxed selection:bg-dev-green selection:text-black"
+              className="w-full h-full bg-transparent text-dev-text font-mono text-xs resize-none outline-none leading-relaxed selection:bg-dev-green selection:text-dev-bg"
               spellCheck={false}
             />
           </div>

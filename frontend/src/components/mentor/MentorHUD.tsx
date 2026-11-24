@@ -225,10 +225,10 @@ export const MentorHUD: React.FC = () => {
       <div className="flex items-center justify-between px-4 py-2.5 bg-dev-bg border-b border-dev-border">
         <div className="flex items-center gap-2">
           <Bot className="w-4 h-4 text-dev-cyan animate-pulse" />
-          <span className="text-xs font-mono font-bold text-dev-cyan">
+          <span className="text-xs font-bold text-dev-cyan">
             MENTOR_AI // PROCESS DAEMON
           </span>
-          <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-mono font-bold">
+          <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-bold">
             ONLINE
           </span>
         </div>
@@ -242,7 +242,7 @@ export const MentorHUD: React.FC = () => {
               setVoiceEnabled(next);
               if (!next) stopCurrentAudio();
             }}
-            className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold flex items-center gap-1 transition-colors ${
+            className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 transition-colors ${
               voiceEnabled ? 'bg-dev-green/20 text-dev-green border border-dev-green/40' : 'bg-zinc-800 text-dev-muted border border-dev-border'
             }`}
             title={voiceEnabled ? 'Narração por voz ATIVA' : 'Narração por voz MUTADA'}
@@ -266,7 +266,7 @@ export const MentorHUD: React.FC = () => {
 
       {/* Scaffolding Level Selector (1-5) */}
       <div className="px-3 py-2 bg-dev-surfaceHover border-b border-dev-border">
-        <div className="flex items-center justify-between text-[11px] font-mono mb-1.5">
+        <div className="flex items-center justify-between text-[11px] mb-1.5">
           <span className="text-dev-muted">SCAFFOLDING LEVEL:</span>
           <span className="text-dev-cyan font-bold">{hintLevelDescriptions[hintLevel - 1].title}</span>
           <span className="text-amber-400 font-bold">{hintLevelDescriptions[hintLevel - 1].penalty}</span>
@@ -277,9 +277,9 @@ export const MentorHUD: React.FC = () => {
               key={lvl}
               type="button"
               onClick={() => setHintLevel(lvl)}
-              className={`py-1 rounded text-center text-xs font-mono font-bold transition-all ${
+              className={`py-1 rounded text-center text-xs font-bold transition-all ${
                 hintLevel === lvl
-                  ? 'bg-dev-cyan text-black shadow-glow-cyan'
+                  ? 'bg-dev-cyan text-dev-bg'
                   : 'bg-dev-bg border border-dev-border text-dev-muted hover:text-white'
               }`}
             >
@@ -290,7 +290,7 @@ export const MentorHUD: React.FC = () => {
       </div>
 
       {/* Chat Messages List */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-3 font-mono text-xs bg-dev-bg/90">
+      <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs bg-dev-bg/90">
         {messages.length === 0 ? (
           <div className="p-4 rounded bg-dev-surface border border-dev-border text-zinc-400 text-center space-y-2">
             <Bot className="w-8 h-8 text-dev-cyan mx-auto animate-bounce" />
@@ -349,7 +349,7 @@ export const MentorHUD: React.FC = () => {
                   <div className="whitespace-pre-wrap">{m.message}</div>
 
                   {m.suggestedCode && (
-                    <div className="mt-2 p-2 rounded bg-black/80 border border-dev-border font-mono text-[11px] text-dev-green overflow-x-auto">
+                    <div className="mt-2 p-2 rounded bg-black/80 border border-dev-border text-[11px] text-dev-green overflow-x-auto">
                       <pre>{m.suggestedCode}</pre>
                     </div>
                   )}
@@ -359,7 +359,7 @@ export const MentorHUD: React.FC = () => {
           })
         )}
         {loading && (
-          <div className="flex items-center gap-2 text-dev-cyan text-xs font-mono animate-pulse">
+          <div className="flex items-center gap-2 text-dev-cyan text-xs animate-pulse">
             <Bot className="w-4 h-4" />
             <span>formulando orientação pedagógica e gerando síntese de voz...</span>
           </div>
@@ -369,7 +369,7 @@ export const MentorHUD: React.FC = () => {
 
       {/* Voice Recognition Banner if Active */}
       {isListening && (
-        <div className="px-3 py-1.5 bg-rose-500/20 border-t border-rose-500/40 text-rose-300 text-[11px] font-mono flex items-center justify-between animate-pulse">
+        <div className="px-3 py-1.5 bg-rose-500/20 border-t border-rose-500/40 text-rose-300 text-[11px] flex items-center justify-between animate-pulse">
           <div className="flex items-center gap-2">
             <Radio className="w-3.5 h-3.5 text-rose-400 animate-spin" />
             <span className="font-bold">Ouvindo sua voz... Fale sua pergunta agora!</span>
@@ -392,7 +392,7 @@ export const MentorHUD: React.FC = () => {
           onClick={isListening ? stopVoiceRecognition : startVoiceRecognition}
           className={`p-2 rounded font-bold transition-all flex items-center justify-center ${
             isListening
-              ? 'bg-rose-500 text-white animate-bounce shadow-glow-amber'
+              ? 'bg-rose-500 text-white animate-bounce'
               : 'bg-dev-bg border border-dev-border hover:border-dev-green text-dev-green'
           }`}
           title={isListening ? 'Parar Microfone' : 'Falar por Voz com o Professor'}
@@ -405,12 +405,12 @@ export const MentorHUD: React.FC = () => {
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           placeholder={`Digite ou clique no 🎙️ para falar...`}
-          className="flex-1 px-3 py-2 bg-dev-bg border border-dev-border rounded text-xs font-mono text-dev-text focus:border-dev-cyan outline-none"
+          className="flex-1 px-3 py-2 bg-dev-bg border border-dev-border rounded text-xs text-dev-text focus:border-dev-cyan outline-none"
         />
         <button
           type="submit"
           disabled={loading || !inputMessage.trim()}
-          className="p-2 rounded bg-dev-cyan text-black font-bold hover:bg-dev-cyanDim transition-colors disabled:opacity-50"
+          className="p-2 rounded bg-dev-cyan text-dev-bg font-bold hover:bg-dev-cyanDim transition-colors disabled:opacity-50"
         >
           <Send className="w-4 h-4" />
         </button>

@@ -95,24 +95,24 @@ export const SkillRadar: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12 text-dev-green font-mono text-sm">
-        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+      <div className="flex items-center justify-center p-12 text-dev-green text-sm">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2"></span>
         Carregando árvore de habilidades RPG...
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 font-mono">
+    <div className="space-y-6">
       {/* Top Skills Overview Header */}
       <div className="bg-dev-surface border border-dev-border rounded-lg p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-dev-border">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-dev-green mb-1">
+            <div className="flex items-center gap-2 text-xs text-dev-green mb-1">
               <Award className="w-4 h-4" />
               <span>SKILL TREE RPG // 5-DIMENSIONAL MASTERY ENGINE</span>
             </div>
-            <h1 className="text-lg font-bold font-mono text-white flex items-center gap-2">
+            <h1 className="text-lg font-bold text-white flex items-center gap-2">
               <span>Árvore de Habilidades & Radar de Maestria</span>
               <span className="text-xs px-2 py-0.5 rounded bg-dev-cyan/10 text-dev-cyan border border-dev-cyan/20">
                 NÍVEL 02 // CADET LEAD
@@ -125,13 +125,13 @@ export const SkillRadar: React.FC = () => {
             <div className="flex items-center bg-zinc-900 rounded p-0.5 border border-dev-border text-xs">
               <button
                 onClick={() => setSelectedViewMode('TREE')}
-                className={`px-3 py-1 rounded transition-colors ${selectedViewMode === 'TREE' ? 'bg-dev-green text-black font-bold shadow-glow-green' : 'text-dev-muted hover:text-white'}`}
+                className={`px-3 py-1 rounded transition-colors ${selectedViewMode === 'TREE' ? 'bg-dev-green text-dev-bg font-bold' : 'text-dev-muted hover:text-white'}`}
               >
                 ÁRVORE RPG
               </button>
               <button
                 onClick={() => setSelectedViewMode('MATRIX')}
-                className={`px-3 py-1 rounded transition-colors ${selectedViewMode === 'MATRIX' ? 'bg-dev-cyan text-black font-bold shadow-glow-cyan' : 'text-dev-muted hover:text-white'}`}
+                className={`px-3 py-1 rounded transition-colors ${selectedViewMode === 'MATRIX' ? 'bg-dev-cyan text-dev-bg font-bold' : 'text-dev-muted hover:text-white'}`}
               >
                 MATRIZ DETALHADA
               </button>
@@ -140,7 +140,7 @@ export const SkillRadar: React.FC = () => {
         </div>
 
         {/* 5-Dimensional Radar Weights Metrics */}
-        <div className="p-3 rounded bg-dev-bg border border-dev-border text-xs font-mono text-zinc-300 grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div className="p-3 rounded bg-dev-bg border border-dev-border text-xs text-zinc-300 grid grid-cols-2 sm:grid-cols-5 gap-2">
           <div>Conhecimento: <strong className="text-dev-green">{Math.round((weights?.knowledge || 0.15) * 100)}%</strong></div>
           <div>Implementação: <strong className="text-dev-green">{Math.round((weights?.implementation || 0.30) * 100)}%</strong></div>
           <div>Resolução Problemas: <strong className="text-dev-green">{Math.round((weights?.problemSolving || 0.25) * 100)}%</strong></div>
@@ -160,7 +160,7 @@ export const SkillRadar: React.FC = () => {
               return (
                 <div key={tIdx} className="relative group">
                   {/* Node Anchor Circle */}
-                  <div className="absolute -left-[35px] sm:-left-[43px] top-1 w-8 h-8 rounded-full bg-dev-bg border-2 border-dev-green flex items-center justify-center text-dev-green shadow-glow-green">
+                  <div className="absolute -left-[35px] sm:-left-[43px] top-1 w-8 h-8 rounded-full bg-dev-bg border-2 border-dev-green flex items-center justify-center text-dev-green">
                     <TierIcon className="w-4 h-4" />
                   </div>
 
@@ -239,14 +239,14 @@ export const SkillRadar: React.FC = () => {
       {/* ========================================================================= */}
       {selectedViewMode === 'MATRIX' && (
         <div className="space-y-4">
-          <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1 font-mono text-xs">
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1 text-xs">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 rounded whitespace-nowrap transition-colors ${
                   selectedCategory === cat
-                    ? 'bg-dev-green text-black font-bold shadow-glow-green'
+                    ? 'bg-dev-green text-dev-bg font-bold'
                     : 'bg-dev-surface border border-dev-border text-dev-muted hover:text-white'
                 }`}
               >
@@ -270,10 +270,10 @@ export const SkillRadar: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono font-bold text-dev-cyan">
+                    <span className="text-[11px] font-bold text-dev-cyan">
                       [{skill.code}]
                     </span>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${
                       isMastered ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
                       isFragile ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' :
                       isAssisted ? 'bg-dev-cyan/20 text-dev-cyan border border-dev-cyan/40' :
@@ -284,15 +284,15 @@ export const SkillRadar: React.FC = () => {
                   </div>
 
                   <div>
-                    <h3 className="text-xs font-mono font-bold text-white mb-1">
+                    <h3 className="text-xs font-bold text-white mb-1">
                       {skill.name}
                     </h3>
-                    <p className="text-[11px] font-mono text-dev-muted line-clamp-2">
+                    <p className="text-[11px] text-dev-muted line-clamp-2">
                       {skill.description}
                     </p>
                   </div>
 
-                  <div className="space-y-1 pt-2 border-t border-dev-border/60 text-[10px] font-mono">
+                  <div className="space-y-1 pt-2 border-t border-dev-border/60 text-[10px]">
                     <div className="flex justify-between text-zinc-400">
                       <span>Score Composto:</span>
                       <span className="font-bold text-white">{score}%</span>
