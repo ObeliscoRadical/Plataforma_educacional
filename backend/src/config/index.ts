@@ -22,6 +22,7 @@ export const config = {
   
   // Neural Voice Synthesis (FishAudio)
   fishAudioApiKey: process.env.FISHAUDIO_API_KEY || process.env.FISH_AUDIO_API_KEY || '',
+  fishAudioModel: process.env.FISH_AUDIO_MODEL || 's2.1-pro-free',
   fishAudioVoiceId: process.env.FISHAUDIO_VOICE_ID || process.env.FISH_AUDIO_VOICE_ID || 'ec426c7ea3554caba8a5b077a4c701aa',
   
   nodeEnv: process.env.NODE_ENV || 'development',
