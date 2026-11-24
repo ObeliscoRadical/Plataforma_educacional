@@ -77,8 +77,8 @@ export const CurriculumTree: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12 text-dev-green font-mono text-sm">
-        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+      <div className="flex items-center justify-center p-12 text-dev-green text-sm">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2"></span>
         Mounting curriculum filesystem ~/curriculum...
       </div>
     );
@@ -89,11 +89,11 @@ export const CurriculumTree: React.FC = () => {
       {/* Directory Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-dev-surface border border-dev-border rounded-lg">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-dev-green mb-1">
+          <div className="flex items-center gap-2 text-xs text-dev-green mb-1">
             <Terminal className="w-4 h-4" />
             <span>TOPOLOGIA CURRICULAR: 5 ESTÁGIOS // 60+ MISSÕES ATÔMICAS</span>
           </div>
-          <h2 className="text-lg font-bold font-mono text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <span>A Jornada do Cadete ao Tech Lead</span>
             <span className="text-xs px-2 py-0.5 rounded bg-dev-cyan/10 text-dev-cyan border border-dev-cyan/20">
               ESCOLA DE ENGENHARIA
@@ -109,13 +109,13 @@ export const CurriculumTree: React.FC = () => {
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
             placeholder="Filtrar por nome ou código..."
-            className="bg-transparent border-none outline-none w-full text-dev-text placeholder-dev-muted/60 font-mono text-xs"
+            className="bg-transparent border-none outline-none w-full text-dev-text placeholder-dev-muted/60 text-xs"
           />
         </div>
       </div>
 
       {/* Career Stage Selector Tabs */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 font-mono text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
         {STAGES.map((stage) => {
           const Icon = stage.icon;
           const isSelected = selectedStage === stage.id;
@@ -125,7 +125,7 @@ export const CurriculumTree: React.FC = () => {
               onClick={() => setSelectedStage(stage.id)}
               className={`p-2.5 rounded-lg border text-left transition-all flex flex-col justify-between ${
                 isSelected
-                  ? 'border-dev-green bg-dev-green/10 text-dev-green font-bold shadow-glow-green'
+                  ? 'border-dev-green bg-dev-green/10 text-dev-green font-bold'
                   : 'border-dev-border bg-dev-surface hover:bg-dev-surfaceHover text-zinc-300'
               }`}
             >
@@ -180,26 +180,26 @@ export const CurriculumTree: React.FC = () => {
                       <Folder className="w-4 h-4 text-dev-cyan" />
                     )}
 
-                    <span className="font-mono text-xs font-bold text-dev-cyan">
+                    <span className=" text-xs font-bold text-dev-cyan">
                       [{mod.code}]
                     </span>
 
-                    <span className="font-mono text-xs text-white font-medium">
+                    <span className=" text-xs text-white font-medium">
                       {mod.title}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {isCompleted ? (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
                         [✓] COMPLETED
                       </span>
                     ) : isActive ? (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-dev-green/10 text-dev-green border border-dev-green/20 font-bold">
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-dev-green/10 text-dev-green border border-dev-green/20 font-bold">
                         [&gt;] ACTIVE
                       </span>
                     ) : (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-bold">
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-bold">
                         [LOCKED]
                       </span>
                     )}
@@ -226,7 +226,7 @@ export const CurriculumTree: React.FC = () => {
                           <div
                             key={lesson.id}
                             onClick={() => !lessonLocked && handleOpenLesson(lesson.id, mod.id)}
-                            className={`flex items-center justify-between p-2 rounded text-xs font-mono transition-colors ${
+                            className={`flex items-center justify-between p-2 rounded text-xs transition-colors ${
                               lessonLocked
                                 ? 'text-dev-muted cursor-not-allowed opacity-50'
                                 : 'text-zinc-200 hover:bg-dev-surface cursor-pointer hover:text-dev-green'
@@ -257,7 +257,7 @@ export const CurriculumTree: React.FC = () => {
                         );
                       })
                     ) : (
-                      <div className="text-xs font-mono text-dev-muted py-1">
+                      <div className="text-xs text-dev-muted py-1">
                         Aulas em carregamento...
                       </div>
                     )}
@@ -274,27 +274,27 @@ export const CurriculumTree: React.FC = () => {
             <div className="sticky top-24 bg-dev-surface border border-dev-border rounded-lg p-5 space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-dev-border">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-dev-green">
+                  <span className=" text-xs font-bold text-dev-green">
                     INSPECTOR: {selectedModuleDetails.code}
                   </span>
                 </div>
-                <span className="text-xs font-mono text-dev-cyan font-bold">
+                <span className="text-xs text-dev-cyan font-bold">
                   {selectedModuleDetails.status}
                 </span>
               </div>
 
               <div>
-                <h3 className="text-sm font-bold font-mono text-white mb-1">
+                <h3 className="text-sm font-bold text-white mb-1">
                   {selectedModuleDetails.title}
                 </h3>
-                <p className="text-xs font-mono text-zinc-300 leading-relaxed">
+                <p className="text-xs text-zinc-300 leading-relaxed">
                   {selectedModuleDetails.summary}
                 </p>
               </div>
 
               {/* Module Challenge / Project Info */}
               {selectedModuleDetails.project && (
-                <div className="p-3 rounded bg-dev-bg border border-dev-border text-xs font-mono">
+                <div className="p-3 rounded bg-dev-bg border border-dev-border text-xs">
                   <div className="text-dev-cyan font-bold mb-1 flex items-center gap-1.5">
                     <Flame className="w-3.5 h-3.5 text-dev-amber" />
                     PROJETO DO MÓDULO: {selectedModuleDetails.project.title}
@@ -309,7 +309,7 @@ export const CurriculumTree: React.FC = () => {
               {selectedModuleDetails.lessons && selectedModuleDetails.lessons.length > 0 && (
                 <button
                   onClick={() => handleOpenLesson(selectedModuleDetails.lessons[0].id, selectedModuleDetails.id)}
-                  className="w-full py-2.5 px-4 bg-dev-green text-black font-mono font-bold text-xs rounded hover:bg-dev-greenDim transition-all shadow-glow-green flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-all flex items-center justify-center gap-2"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
                   <span>[ ABRIR AULA {selectedModuleDetails.lessons[0].code} ]</span>
@@ -317,7 +317,7 @@ export const CurriculumTree: React.FC = () => {
               )}
             </div>
           ) : (
-            <div className="bg-dev-surface border border-dev-border rounded-lg p-6 text-center text-xs font-mono text-dev-muted">
+            <div className="bg-dev-surface border border-dev-border rounded-lg p-6 text-center text-xs text-dev-muted">
               Selecione um módulo para inspecionar.
             </div>
           )}

@@ -55,8 +55,8 @@ export const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12 text-dev-green font-mono text-sm">
-        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+      <div className="flex items-center justify-center p-12 text-dev-green text-sm">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2"></span>
         Booting Developer OS Core Systems...
       </div>
     );
@@ -72,14 +72,14 @@ export const Dashboard: React.FC = () => {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-dev-green mb-1">
+            <div className="flex items-center gap-2 text-xs text-dev-green mb-1">
               <span className="w-2 h-2 rounded-full bg-dev-green animate-pulse"></span>
               <span>ENVIRONMENT BOOT COMPLETE // SYSTEM ID: DEVOS-NODE-01</span>
             </div>
-            <h1 className="text-xl md:text-2xl font-bold font-mono text-white tracking-tight">
+            <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">
               DEVELOPER OPERATING SYSTEM
             </h1>
-            <p className="text-xs text-dev-muted font-mono mt-1 max-w-xl">
+            <p className="text-xs text-dev-muted mt-1 max-w-xl">
               Ambiente de Treinamento e Prática Contínua. O aluno avança demonstrando domínio real de código, arquitetura e debugging.
             </p>
           </div>
@@ -87,14 +87,14 @@ export const Dashboard: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleContinueMission}
-              className="px-5 py-2.5 bg-dev-green text-black font-mono font-bold text-xs rounded hover:bg-dev-greenDim transition-all shadow-glow-green flex items-center gap-2"
+              className="px-5 py-2.5 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-all flex items-center gap-2"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>[ CONTINUE MISSION ]</span>
             </button>
             <button
               onClick={() => setMentorOpen(true)}
-              className="px-4 py-2.5 bg-dev-surfaceHover border border-dev-cyan/40 text-dev-cyan font-mono font-bold text-xs rounded hover:bg-dev-cyan/10 transition-all flex items-center gap-2"
+              className="px-4 py-2.5 bg-dev-surfaceHover border border-dev-cyan/40 text-dev-cyan font-bold text-xs rounded hover:bg-dev-cyan/10 transition-all flex items-center gap-2"
             >
               <Bot className="w-4 h-4" />
               <span>MENTOR AI</span>
@@ -104,7 +104,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Global Progress Bar */}
         <div className="mt-6 pt-4 border-t border-dev-border/60">
-          <div className="flex justify-between items-center text-xs font-mono text-dev-muted mb-1.5">
+          <div className="flex justify-between items-center text-xs text-dev-muted mb-1.5">
             <span>CURRICULUM MASTERY PROGRESS ({completedCount}/24 MODULES)</span>
             <span className="text-dev-green font-bold">{totalPercent}% MASTERED</span>
           </div>
@@ -120,55 +120,55 @@ export const Dashboard: React.FC = () => {
       {/* Systems Diagnostics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-dev-surface border border-dev-border rounded-lg p-4">
-          <div className="flex items-center justify-between text-dev-muted text-xs font-mono mb-2">
+          <div className="flex items-center justify-between text-dev-muted text-xs mb-2">
             <span>AI MENTOR</span>
             <Bot className="w-4 h-4 text-dev-cyan" />
           </div>
-          <div className="text-lg font-bold font-mono text-dev-cyan flex items-center gap-2">
+          <div className="text-lg font-bold text-dev-cyan flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-dev-cyan animate-pulse"></span>
             ONLINE / READY
           </div>
-          <div className="text-[11px] text-dev-muted font-mono mt-1">
+          <div className="text-[11px] text-dev-muted mt-1">
             5 Scaffolding Levels Active
           </div>
         </div>
 
         <div className="bg-dev-surface border border-dev-border rounded-lg p-4">
-          <div className="flex items-center justify-between text-dev-muted text-xs font-mono mb-2">
+          <div className="flex items-center justify-between text-dev-muted text-xs mb-2">
             <span>CODE LAB SANDBOX</span>
             <Code2 className="w-4 h-4 text-dev-green" />
           </div>
-          <div className="text-lg font-bold font-mono text-dev-green flex items-center gap-2">
+          <div className="text-lg font-bold text-dev-green flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-dev-green"></span>
             VM SECURE
           </div>
-          <div className="text-[11px] text-dev-muted font-mono mt-1">
+          <div className="text-[11px] text-dev-muted mt-1">
             CODE | PREVIEW | TERMINAL
           </div>
         </div>
 
         <div className="bg-dev-surface border border-dev-border rounded-lg p-4">
-          <div className="flex items-center justify-between text-dev-muted text-xs font-mono mb-2">
+          <div className="flex items-center justify-between text-dev-muted text-xs mb-2">
             <span>SKILL RADAR</span>
             <Award className="w-4 h-4 text-dev-amber" />
           </div>
-          <div className="text-lg font-bold font-mono text-dev-amber">
+          <div className="text-lg font-bold text-dev-amber">
             {masteredSkills} / 24 MASTERED
           </div>
-          <div className="text-[11px] text-dev-muted font-mono mt-1">
+          <div className="text-[11px] text-dev-muted mt-1">
             {fragileSkills.length > 0 ? `${fragileSkills.length} fragile detected` : 'Autonomy stable (100%)'}
           </div>
         </div>
 
         <div className="bg-dev-surface border border-dev-border rounded-lg p-4">
-          <div className="flex items-center justify-between text-dev-muted text-xs font-mono mb-2">
+          <div className="flex items-center justify-between text-dev-muted text-xs mb-2">
             <span>DEVELOPER CHALLENGE</span>
             <Sparkles className="w-4 h-4 text-purple-400" />
           </div>
-          <div className="text-lg font-bold font-mono text-purple-400">
+          <div className="text-lg font-bold text-purple-400">
             MOD_23 EXAM
           </div>
-          <div className="text-[11px] text-dev-muted font-mono mt-1">
+          <div className="text-[11px] text-dev-muted mt-1">
             4 Stages Defense Capstone
           </div>
         </div>
@@ -180,17 +180,17 @@ export const Dashboard: React.FC = () => {
           <div className="flex items-center gap-3">
             <Wrench className="w-5 h-5 text-amber-400 shrink-0" />
             <div>
-              <div className="text-xs font-mono font-bold text-amber-400">
+              <div className="text-xs font-bold text-amber-400">
                 [!] REFORÇO ADAPTATIVO REQUERIDO: {fragileSkills.map(s => s.name).join(', ')}
               </div>
-              <div className="text-[11px] font-mono text-dev-muted">
+              <div className="text-[11px] text-dev-muted">
                 O Mentor detectou dificuldade prática nestas competências. Execute a microaula de reforço para reestabelecer seu score de autonomia.
               </div>
             </div>
           </div>
           <button
             onClick={() => setActiveView('REMEDIALS')}
-            className="px-3 py-1.5 rounded bg-amber-400 text-black font-mono font-bold text-xs shrink-0 hover:bg-amber-500 transition-colors"
+            className="px-3 py-1.5 rounded bg-amber-400 text-dev-bg font-bold text-xs shrink-0 hover:bg-amber-500 transition-colors"
           >
             [ REFORÇO ]
           </button>
@@ -204,21 +204,21 @@ export const Dashboard: React.FC = () => {
           <div className="flex items-center justify-between mb-4 pb-2 border-b border-dev-border">
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-dev-green" />
-              <span className="text-xs font-mono font-bold text-white uppercase">
+              <span className="text-xs font-bold text-white uppercase">
                 MISSÃO ATIVA: {activeModule?.code} // {activeModule?.title}
               </span>
             </div>
-            <span className="text-xs font-mono text-dev-cyan font-semibold">
+            <span className="text-xs text-dev-cyan font-semibold">
               {activeModule?.status}
             </span>
           </div>
 
-          <p className="text-xs text-zinc-300 font-mono leading-relaxed mb-6">
+          <p className="text-xs text-zinc-300 leading-relaxed mb-6">
             {activeModule?.summary}
           </p>
 
           <div className="flex items-center justify-between pt-4 border-t border-dev-border">
-            <div className="text-xs font-mono text-dev-muted">
+            <div className="text-xs text-dev-muted">
               Método: <span className="text-dev-green">EXPLICAR → MOSTRAR → FAZER JUNTO → FAZER SOZINHO → TESTAR</span>
             </div>
             <button
@@ -226,7 +226,7 @@ export const Dashboard: React.FC = () => {
                 setCurrentModuleId(activeModule.id);
                 setActiveView('CURRICULUM');
               }}
-              className="text-xs font-mono text-dev-cyan hover:underline flex items-center gap-1"
+              className="text-xs text-dev-cyan hover:underline flex items-center gap-1"
             >
               <span>Ver todos os 24 módulos</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -236,7 +236,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Right: Live Terminal Telemetry Stream */}
         <div className="bg-dev-surface border border-dev-border rounded-lg p-4 flex flex-col h-[280px]">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-dev-border text-xs font-mono text-dev-muted">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-dev-border text-xs text-dev-muted">
             <div className="flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-dev-green" />
               <span>TERMINAL TELEMETRY</span>
@@ -244,7 +244,7 @@ export const Dashboard: React.FC = () => {
             <span className="text-[10px] text-dev-green">LIVE</span>
           </div>
 
-          <div className="flex-1 overflow-y-auto space-y-1 text-[11px] font-mono scrollbar-none pr-1">
+          <div className="flex-1 overflow-y-auto space-y-1 text-[11px] scrollbar-none pr-1">
             {logs.slice(-8).map((log) => (
               <div key={log.id} className="flex items-start gap-1.5 text-zinc-400 leading-tight">
                 <span className="text-dev-muted select-none">[{log.timestamp}]</span>

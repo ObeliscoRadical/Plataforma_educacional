@@ -4,8 +4,8 @@
   "description": "Developer Operating System — Ambiente de Treinamento com IA",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#090a0f",
-  "theme_color": "#00ff66",
+  "background_color": "#0b0c0f",
+  "theme_color": "#c6ff3d",
   "icons": [
     {
       "src": "/terminal.svg",

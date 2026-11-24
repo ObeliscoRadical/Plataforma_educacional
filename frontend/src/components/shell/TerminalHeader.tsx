@@ -65,10 +65,10 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
             <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block shadow-sm"></span>
             <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block shadow-sm"></span>
           </div>
-          <span className="text-dev-muted font-mono font-medium hidden sm:inline">
+          <span className="text-dev-muted font-medium hidden sm:inline">
             developer@academy:~
           </span>
-          <span className="text-dev-green font-mono font-semibold bg-dev-green/10 px-2 py-0.5 rounded border border-dev-green/20">
+          <span className="text-dev-green font-semibold bg-dev-green/10 px-2 py-0.5 rounded border border-dev-green/20">
             {breadcrumb}
           </span>
         </div>
@@ -110,7 +110,7 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
             onClick={() => setMentorOpen(!mentorOpen)}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold transition-all ${
               mentorOpen 
-                ? 'bg-dev-cyan text-black shadow-glow-cyan' 
+                ? 'bg-dev-cyan text-dev-bg' 
                 : 'bg-dev-cyan/10 text-dev-cyan border border-dev-cyan/30 hover:bg-dev-cyan/20'
             }`}
           >
@@ -122,7 +122,7 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
           {user ? (
             <div className="flex items-center gap-2 pl-2 border-l border-dev-border">
               <img src={user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=dev'} alt="Avatar" className="w-5 h-5 rounded-full border border-dev-green" />
-              <span className="text-dev-text hidden lg:inline font-mono font-medium">@{user.handle}</span>
+              <span className="text-dev-text hidden lg:inline font-medium">@{user.handle}</span>
               <span className="text-[10px] px-1.5 py-0.2 rounded bg-dev-border text-dev-cyan font-bold">{user.role}</span>
               <button 
                 onClick={logout} 
@@ -135,7 +135,7 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
           ) : (
             <button
               onClick={onOpenAuth}
-              className="flex items-center gap-1 px-2.5 py-1 rounded bg-dev-green text-black font-semibold text-xs hover:bg-dev-greenDim transition-colors shadow-glow-green"
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-dev-green text-dev-bg font-semibold text-xs hover:bg-dev-greenDim transition-colors"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>[ AUTH BOOT ]</span>
@@ -156,9 +156,9 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
               <button
                 key={item.view}
                 onClick={() => setActiveView(item.view)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded font-mono text-xs whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-dev-green text-black font-bold shadow-glow-green'
+                    ? 'bg-dev-green text-dev-bg font-bold'
                     : 'text-dev-muted hover:text-dev-text hover:bg-dev-surfaceHover'
                 }`}
               >
@@ -178,7 +178,7 @@ export const TerminalHeader: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAut
             value={commandInput}
             onChange={(e) => setCommandInput(e.target.value)}
             placeholder="cmd: open lesson 00.01 | codelab | arena | pay..."
-            className="bg-transparent border-none outline-none w-full text-dev-text placeholder-dev-muted/60 font-mono text-xs"
+            className="bg-transparent border-none outline-none w-full text-dev-text placeholder-dev-muted/60 text-xs"
           />
         </form>
       </div>

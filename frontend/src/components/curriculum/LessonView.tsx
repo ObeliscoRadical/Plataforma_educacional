@@ -45,7 +45,7 @@ export const LessonView: React.FC = () => {
   const [isAutoStepping, setIsAutoStepping] = useState(false);
 
   // Live DOM Sandbox State
-  const [domHtml, setDomHtml] = useState('<div class="card">\n  <h2>🚀 Componente Vivo</h2>\n  <p>Edite o código ao lado e veja a interface atualizar no mesmo instante!</p>\n  <button onclick="alert(\'Olá do Developer OS!\')">Clique Aqui</button>\n</div>\n\n<style>\n  body { font-family: sans-serif; background: #0c0d12; color: #fff; padding: 20px; }\n  .card { background: #161822; border: 1px solid #00FF66; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,255,102,0.15); }\n  h2 { color: #00FF66; margin-top: 0; }\n  button { background: #00FF66; color: #000; font-weight: bold; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }\n  button:hover { background: #00cc52; }\n</style>');
+  const [domHtml, setDomHtml] = useState('<div class="card">\n  <h2>🚀 Componente Vivo</h2>\n  <p>Edite o código ao lado e veja a interface atualizar no mesmo instante!</p>\n  <button onclick="alert(\'Olá do Developer OS!\')">Clique Aqui</button>\n</div>\n\n<style>\n  body { font-family: sans-serif; background: #0b0c0f; color: #fff; padding: 20px; }\n  .card { background: #161920; border: 1px solid #c6ff3d; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(198,255,61,0.12); }\n  h2 { color: #c6ff3d; margin-top: 0; }\n  button { background: #c6ff3d; color: #000; font-weight: bold; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }\n  button:hover { background: #a5d92f; }\n</style>');
 
   const playbackIntervalRef = useRef<any>(null);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -440,8 +440,8 @@ export const LessonView: React.FC = () => {
 
   if (loading || !lesson) {
     return (
-      <div className="flex items-center justify-center p-12 text-dev-green font-mono text-sm">
-        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+      <div className="flex items-center justify-center p-12 text-dev-green text-sm">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2"></span>
         Carregando sala de aula e lição...
       </div>
     );
@@ -455,7 +455,7 @@ export const LessonView: React.FC = () => {
       {/* Lesson Shell Title Bar */}
       <div className="bg-dev-surface border border-dev-border rounded-lg p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-dev-border">
-          <div className="flex items-center gap-2 text-xs font-mono">
+          <div className="flex items-center gap-2 text-xs">
             <span className="px-2 py-0.5 rounded bg-dev-cyan/10 text-dev-cyan border border-dev-cyan/20 font-bold">
               {lesson.module_code}
             </span>
@@ -464,12 +464,12 @@ export const LessonView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs font-mono text-dev-muted">
+            <span className="text-xs text-dev-muted">
               Dificuldade: <span className="text-dev-cyan font-semibold">{lesson.difficulty}</span>
             </span>
             <button
               onClick={() => setActiveView('CODELAB')}
-              className="px-3.5 py-1.5 rounded bg-dev-green text-black font-mono font-bold text-xs hover:bg-dev-greenDim transition-colors shadow-glow-green flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded bg-dev-green text-dev-bg font-bold text-xs hover:bg-dev-greenDim transition-colors flex items-center gap-1.5"
             >
               <Code2 className="w-3.5 h-3.5" />
               <span>[ ABRIR CODE LAB ]</span>
@@ -477,20 +477,20 @@ export const LessonView: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-lg md:text-xl font-bold font-mono text-white mb-2 flex items-center gap-2">
+        <h1 className="text-lg md:text-xl font-bold text-white mb-2 flex items-center gap-2">
           <Monitor className="w-5 h-5 text-dev-cyan" />
           <span>{lesson.title}</span>
         </h1>
 
         {lesson.content?.objective && (
-          <div className="text-xs font-mono text-dev-muted bg-dev-bg/60 p-2.5 rounded border border-dev-border/60">
+          <div className="text-xs text-dev-muted bg-dev-bg/60 p-2.5 rounded border border-dev-border/60">
             <strong className="text-dev-green">OBJETIVO PEDAGÓGICO:</strong> {lesson.content.objective}
           </div>
         )}
       </div>
 
       {/* Pedagogical Step Tabs */}
-      <div className="flex border-b border-dev-border gap-2 overflow-x-auto scrollbar-none pb-1 font-mono text-xs">
+      <div className="flex border-b border-dev-border gap-2 overflow-x-auto scrollbar-none pb-1 text-xs">
         <button
           onClick={() => setSelectedTab('VIDEO')}
           className={`flex items-center gap-1.5 px-3 py-2 border-b-2 transition-colors ${
@@ -591,7 +591,7 @@ export const LessonView: React.FC = () => {
       {/* 1. INTERACTIVE CLASSROOM & HANDS-ON LAB                                  */}
       {/* ========================================================================= */}
       {selectedTab === 'VIDEO' && (
-        <div className="space-y-4 font-mono">
+        <div className="space-y-4">
           {/* Main Classroom Screen Container */}
           <div className="bg-[#0b0c10] border border-dev-border rounded-lg overflow-hidden shadow-terminal flex flex-col">
             {/* Top Classroom Bar */}
@@ -627,19 +627,19 @@ export const LessonView: React.FC = () => {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => setActiveDiagram('MEMORY')}
-                          className={`px-2 py-0.5 rounded text-[10px] ${activeDiagram === 'MEMORY' ? 'bg-dev-cyan text-black font-bold' : 'bg-zinc-800 text-zinc-400'}`}
+                          className={`px-2 py-0.5 rounded text-[10px] ${activeDiagram === 'MEMORY' ? 'bg-dev-cyan text-dev-bg font-bold' : 'bg-zinc-800 text-zinc-400'}`}
                         >
                           MEMÓRIA RAM
                         </button>
                         <button
                           onClick={() => setActiveDiagram('ARRAY_PIPELINE')}
-                          className={`px-2 py-0.5 rounded text-[10px] ${activeDiagram === 'ARRAY_PIPELINE' ? 'bg-dev-cyan text-black font-bold' : 'bg-zinc-800 text-zinc-400'}`}
+                          className={`px-2 py-0.5 rounded text-[10px] ${activeDiagram === 'ARRAY_PIPELINE' ? 'bg-dev-cyan text-dev-bg font-bold' : 'bg-zinc-800 text-zinc-400'}`}
                         >
                           ESTEIRA DE ARRAYS
                         </button>
                         <button
                           onClick={() => setActiveDiagram('HTTP_RESTAURANT')}
-                          className={`px-2 py-0.5 rounded text-[10px] ${activeDiagram === 'HTTP_RESTAURANT' ? 'bg-dev-cyan text-black font-bold' : 'bg-zinc-800 text-zinc-400'}`}
+                          className={`px-2 py-0.5 rounded text-[10px] ${activeDiagram === 'HTTP_RESTAURANT' ? 'bg-dev-cyan text-dev-bg font-bold' : 'bg-zinc-800 text-zinc-400'}`}
                         >
                           RESTAURANTE HTTP
                         </button>
@@ -672,7 +672,7 @@ export const LessonView: React.FC = () => {
                             <div className="text-[10px] font-bold text-dev-cyan uppercase">// HEAP (Objetos Complexos)</div>
                             <div className="p-1.5 rounded bg-black/60 border border-zinc-800 text-[11px]">
                               <div className="text-dev-cyan font-bold">@Heap_0x8F:</div>
-                              <div className="text-[10px] text-zinc-300 font-mono">{'{ name: "Marcus", role: "Dev" }'}</div>
+                              <div className="text-[10px] text-zinc-300">{'{ name: "Marcus", role: "Dev" }'}</div>
                             </div>
                           </div>
                         </div>
@@ -761,7 +761,7 @@ export const LessonView: React.FC = () => {
                       </pre>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-[#050608] border border-dev-border text-[11px] font-mono space-y-1">
+                    <div className="p-3 rounded-lg bg-dev-bg border border-dev-border text-[11px] space-y-1">
                       <div className="text-dev-muted font-bold text-[10px]">// TERMINAL DE EXECUÇÃO EM TEMPO REAL</div>
                       {currentScene.executionLogs?.map((log, idx) => (
                         <div key={idx} className={log.includes('✓') ? 'text-emerald-400 font-bold' : 'text-zinc-300'}>
@@ -804,7 +804,7 @@ export const LessonView: React.FC = () => {
                           }}
                           placeholder="// Digite seu código aqui para testar junto com o Professor..."
                           rows={7}
-                          className="w-full p-3 rounded-lg bg-black border border-dev-cyan/50 text-xs font-mono text-dev-green focus:border-dev-green focus:ring-1 focus:ring-dev-green outline-none resize-none leading-relaxed shadow-terminal selection:bg-dev-green/30"
+                          className="w-full p-3 rounded-lg bg-black border border-dev-cyan/50 text-xs text-dev-green focus:border-dev-green focus:ring-1 focus:ring-dev-green outline-none resize-none leading-relaxed shadow-terminal selection:bg-dev-green/30"
                         />
                       </div>
 
@@ -817,7 +817,7 @@ export const LessonView: React.FC = () => {
                         <button
                           onClick={handleRunStudentLiveCode}
                           disabled={executingStudentCode || !studentCode.trim()}
-                          className="px-4 py-2 rounded bg-dev-green text-black font-bold text-xs hover:bg-dev-greenDim transition-all shadow-glow-green flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                          className="px-4 py-2 rounded bg-dev-green text-dev-bg font-bold text-xs hover:bg-dev-greenDim transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                         >
                           {executingStudentCode ? (
                             <>
@@ -836,7 +836,7 @@ export const LessonView: React.FC = () => {
 
                     {/* Live Sandbox Execution Output Pane */}
                     {studentExecResult && (
-                      <div className={`p-3 rounded-lg border text-xs font-mono transition-all ${
+                      <div className={`p-3 rounded-lg border text-xs transition-all ${
                         studentExecResult.success
                           ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
                           : 'bg-rose-950/40 border-rose-500/50 text-rose-300'
@@ -892,7 +892,7 @@ export const LessonView: React.FC = () => {
                         <Bot className="w-9 h-9" />
                       </div>
                       {isPlaying && (
-                        <div className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded bg-dev-green text-black text-[9px] font-bold flex items-center gap-1">
+                        <div className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded bg-dev-green text-dev-bg text-[9px] font-bold flex items-center gap-1">
                           <Mic className="w-2.5 h-2.5" /> FALANDO
                         </div>
                       )}
@@ -916,7 +916,7 @@ export const LessonView: React.FC = () => {
                 <div className="text-center">
                   <button
                     onClick={handleTogglePlay}
-                    className="w-full py-3 rounded-lg bg-dev-green text-black font-bold text-xs hover:bg-dev-greenDim transition-all flex items-center justify-center gap-2 shadow-glow-green cursor-pointer"
+                    className="w-full py-3 rounded-lg bg-dev-green text-dev-bg font-bold text-xs hover:bg-dev-greenDim transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {isPlaying ? (
                       <>
@@ -937,7 +937,7 @@ export const LessonView: React.FC = () => {
             {/* Bottom Controls Bar (Timeline, Velocidade, Capítulos) */}
             <div className="bg-black/90 border-t border-dev-border px-4 py-3 space-y-2">
               <div className="flex items-center gap-3">
-                <span className="text-[11px] font-mono text-dev-muted w-10 text-right">
+                <span className="text-[11px] text-dev-muted w-10 text-right">
                   {formatTime(currentTime)}
                 </span>
                 <input
@@ -949,16 +949,16 @@ export const LessonView: React.FC = () => {
                   onChange={handleSeek}
                   className="flex-1 h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-dev-green"
                 />
-                <span className="text-[11px] font-mono text-dev-muted w-10">
+                <span className="text-[11px] text-dev-muted w-10">
                   {formatTime(totalDuration)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleTogglePlay}
-                    className="p-1.5 rounded bg-dev-green text-black hover:bg-dev-greenDim transition-colors font-bold flex items-center gap-1"
+                    className="p-1.5 rounded bg-dev-green text-dev-bg hover:bg-dev-greenDim transition-colors font-bold flex items-center gap-1"
                   >
                     {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
                     <span>{isPlaying ? 'PAUSE' : 'PLAY'}</span>
@@ -994,7 +994,7 @@ export const LessonView: React.FC = () => {
                         key={s}
                         onClick={() => setPlaybackSpeed(s)}
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          playbackSpeed === s ? 'bg-dev-cyan text-black' : 'text-dev-muted hover:text-white bg-zinc-800'
+                          playbackSpeed === s ? 'bg-dev-cyan text-dev-bg' : 'text-dev-muted hover:text-white bg-zinc-800'
                         }`}
                       >
                         {s}x
@@ -1012,12 +1012,12 @@ export const LessonView: React.FC = () => {
 
           {/* Chapters Grid: 4 Etapas da Aula Escolar */}
           <div className="space-y-2">
-            <div className="text-xs font-mono text-dev-green font-bold flex items-center gap-1.5">
+            <div className="text-xs text-dev-green font-bold flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-dev-cyan" />
               <span>ETAPAS DIDÁTICAS DA AULA (CLIQUE PARA SALTAR)</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 font-mono text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               {scenes.map((s, idx) => {
                 const isCurrent = activeSceneIndex === idx;
                 return (
@@ -1026,7 +1026,7 @@ export const LessonView: React.FC = () => {
                     onClick={() => handleJumpToScene(idx)}
                     className={`p-3 rounded-lg border text-left transition-all ${
                       isCurrent
-                        ? 'border-dev-green bg-dev-green/10 text-dev-green font-bold shadow-glow-green'
+                        ? 'border-dev-green bg-dev-green/10 text-dev-green font-bold'
                         : 'border-dev-border bg-dev-bg hover:bg-dev-surface text-zinc-300'
                     }`}
                   >
@@ -1044,7 +1044,7 @@ export const LessonView: React.FC = () => {
       {/* 2. RAIO-X DO CÓDIGO (LIVE EXECUTION STEPPER & TIME-TRAVEL DEBUGGER)       */}
       {/* ========================================================================= */}
       {selectedTab === 'STEPPER' && (
-        <div className="bg-dev-surface border border-dev-cyan/40 rounded-lg p-6 space-y-6 font-mono">
+        <div className="bg-dev-surface border border-dev-cyan/40 rounded-lg p-6 space-y-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-dev-border">
             <div className="flex items-center gap-2 text-dev-cyan font-bold text-sm">
               <Eye className="w-5 h-5" />
@@ -1071,7 +1071,7 @@ export const LessonView: React.FC = () => {
               <button
                 onClick={() => setActiveStepIndex((prev) => Math.min(stepperSteps.length - 1, prev + 1))}
                 disabled={activeStepIndex === stepperSteps.length - 1}
-                className="px-3 py-1.5 rounded bg-dev-cyan text-black hover:bg-dev-cyanDim disabled:opacity-40 text-xs font-bold flex items-center gap-1 shadow-glow-cyan"
+                className="px-3 py-1.5 rounded bg-dev-cyan text-dev-bg hover:bg-dev-cyanDim disabled:opacity-40 text-xs font-bold flex items-center gap-1"
               >
                 Próximo Passo <SkipForward className="w-3.5 h-3.5" />
               </button>
@@ -1079,7 +1079,7 @@ export const LessonView: React.FC = () => {
               <button
                 onClick={() => setIsAutoStepping(!isAutoStepping)}
                 className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1 ${
-                  isAutoStepping ? 'bg-amber-400 text-black animate-pulse' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                  isAutoStepping ? 'bg-amber-400 text-dev-bg animate-pulse' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                 }`}
               >
                 {isAutoStepping ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
@@ -1121,9 +1121,9 @@ export const LessonView: React.FC = () => {
                   return (
                     <div
                       key={idx}
-                      className={`p-1.5 rounded font-mono transition-all ${
+                      className={`p-1.5 rounded transition-all ${
                         isCurrent
-                          ? 'bg-dev-cyan/20 border-l-4 border-dev-cyan text-white font-bold pl-3 shadow-glow-cyan'
+                          ? 'bg-dev-cyan/20 border-l-4 border-dev-cyan text-white font-bold pl-3'
                           : 'text-zinc-400 pl-3'
                       }`}
                     >
@@ -1167,7 +1167,7 @@ export const LessonView: React.FC = () => {
       {/* 3. LIVE DOM & COMPONENT SANDBOX (UI VIVA EM TEMPO REAL)                   */}
       {/* ========================================================================= */}
       {selectedTab === 'DOM_PREVIEW' && (
-        <div className="bg-dev-surface border border-amber-400/40 rounded-lg p-6 space-y-4 font-mono">
+        <div className="bg-dev-surface border border-amber-400/40 rounded-lg p-6 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-dev-border">
             <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
               <Layout className="w-5 h-5" />
@@ -1186,7 +1186,7 @@ export const LessonView: React.FC = () => {
                 value={domHtml}
                 onChange={(e) => setDomHtml(e.target.value)}
                 rows={14}
-                className="w-full p-3 rounded-lg bg-black border border-zinc-700 text-xs font-mono text-dev-green focus:border-amber-400 focus:ring-1 focus:ring-amber-400 outline-none resize-none leading-relaxed"
+                className="w-full p-3 rounded-lg bg-black border border-zinc-700 text-xs text-dev-green focus:border-amber-400 focus:ring-1 focus:ring-amber-400 outline-none resize-none leading-relaxed"
               />
             </div>
 
@@ -1210,7 +1210,7 @@ export const LessonView: React.FC = () => {
       {/* 4. 'CONSERTE O BUG DO ESTAGIÁRIO' (PAIR DEBUGGING CHALLENGE)              */}
       {/* ========================================================================= */}
       {selectedTab === 'DEBUG' && (
-        <div className="bg-dev-surface border border-rose-500/40 rounded-lg p-6 space-y-6 font-mono">
+        <div className="bg-dev-surface border border-rose-500/40 rounded-lg p-6 space-y-6">
           <div className="flex items-center justify-between pb-3 border-b border-dev-border">
             <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
               <Bug className="w-5 h-5" />
@@ -1253,7 +1253,7 @@ export const LessonView: React.FC = () => {
               value={internCode}
               onChange={(e) => setInternCode(e.target.value)}
               rows={8}
-              className="w-full p-3 rounded-lg bg-black border border-zinc-700 text-xs font-mono text-dev-green focus:border-rose-400 focus:ring-1 focus:ring-rose-400 outline-none resize-none leading-relaxed"
+              className="w-full p-3 rounded-lg bg-black border border-zinc-700 text-xs text-dev-green focus:border-rose-400 focus:ring-1 focus:ring-rose-400 outline-none resize-none leading-relaxed"
             />
           </div>
 
@@ -1264,7 +1264,7 @@ export const LessonView: React.FC = () => {
               disabled={debuggingInProgress}
               className={`px-6 py-2.5 rounded font-bold text-xs transition-all shadow-terminal flex items-center gap-2 ${
                 internDebugSuccess
-                  ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+                  ? 'bg-emerald-500 text-dev-bg hover:bg-emerald-400'
                   : 'bg-rose-500 text-white hover:bg-rose-600'
               }`}
             >
@@ -1289,7 +1289,7 @@ export const LessonView: React.FC = () => {
       {/* ========================================================================= */}
       {selectedTab === 'CONTENT' && (
         <div className="bg-dev-surface border border-dev-border rounded-lg p-6 space-y-6">
-          <div className="flex flex-wrap gap-2 text-xs font-mono">
+          <div className="flex flex-wrap gap-2 text-xs">
             {lesson.content?.competences && lesson.content.competences.map((c, i) => (
               <span key={i} className="px-2 py-0.5 rounded bg-dev-cyan/10 text-dev-cyan border border-dev-cyan/20">
                 COMPETÊNCIA: {c}
@@ -1297,8 +1297,8 @@ export const LessonView: React.FC = () => {
             ))}
           </div>
 
-          <div className="prose prose-invert max-w-none text-xs font-mono text-zinc-300 leading-relaxed space-y-4">
-            <div className="whitespace-pre-wrap font-mono">
+          <div className="prose prose-invert max-w-none text-xs text-zinc-300 leading-relaxed space-y-4">
+            <div className="whitespace-pre-wrap">
               {lesson.content?.content_markdown}
             </div>
           </div>
@@ -1306,7 +1306,7 @@ export const LessonView: React.FC = () => {
           <div className="pt-4 border-t border-dev-border flex justify-between items-center">
             <button
               onClick={() => setMentorOpen(true)}
-              className="text-xs font-mono text-dev-cyan hover:underline flex items-center gap-1"
+              className="text-xs text-dev-cyan hover:underline flex items-center gap-1"
             >
               <Bot className="w-3.5 h-3.5" />
               <span>Dúvida conceitual? Chamar Mentor IA</span>
@@ -1314,7 +1314,7 @@ export const LessonView: React.FC = () => {
 
             <button
               onClick={() => setSelectedTab('VIDEO')}
-              className="px-4 py-2 bg-dev-green text-black font-mono font-bold text-xs rounded hover:bg-dev-greenDim transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-colors flex items-center gap-1.5"
             >
               <span>Ir para a Sala de Aula Interativa</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -1328,17 +1328,17 @@ export const LessonView: React.FC = () => {
       {/* ========================================================================= */}
       {selectedTab === 'PRACTICE' && (
         <div className="bg-dev-surface border border-dev-border rounded-lg p-6 space-y-4">
-          <div className="text-xs font-mono text-dev-green font-bold uppercase">
+          <div className="text-xs text-dev-green font-bold uppercase">
             // FAZER JUNTO: PRÁTICA GUIADA E INVARIANTES
           </div>
-          <div className="p-4 rounded bg-dev-bg border border-dev-border text-xs font-mono text-zinc-300 whitespace-pre-wrap">
+          <div className="p-4 rounded bg-dev-bg border border-dev-border text-xs text-zinc-300 whitespace-pre-wrap">
             {lesson.content?.guided_practice_markdown || 'Nenhuma prática guiada registrada para esta aula.'}
           </div>
 
           <div className="flex justify-end">
             <button
               onClick={() => setActiveView('CODELAB')}
-              className="px-4 py-2 bg-dev-green text-black font-mono font-bold text-xs rounded hover:bg-dev-greenDim transition-colors shadow-glow-green flex items-center gap-2"
+              className="px-4 py-2 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-colors flex items-center gap-2"
             >
               <Code2 className="w-4 h-4" />
               <span>[ IR PARA O LABORATÓRIO DE CÓDIGO ]</span>
@@ -1352,12 +1352,12 @@ export const LessonView: React.FC = () => {
       {/* ========================================================================= */}
       {selectedTab === 'QUIZ' && lesson.quiz && (
         <div className="bg-dev-surface border border-dev-border rounded-lg p-6 space-y-6">
-          <div className="text-xs font-mono text-dev-green font-bold">
+          <div className="text-xs text-dev-green font-bold">
             CHECKPOINT QUIZ: {lesson.quiz.title} (Mínimo para aprovação: {lesson.quiz.passing_score}%)
           </div>
 
           {quizResult && (
-            <div className={`p-4 rounded border text-xs font-mono ${
+            <div className={`p-4 rounded border text-xs ${
               quizResult.passed ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
             }`}>
               {quizResult.message}
@@ -1367,7 +1367,7 @@ export const LessonView: React.FC = () => {
           <div className="space-y-6">
             {lesson.quiz.questions.map((q, idx) => (
               <div key={q.id} className="p-4 rounded bg-dev-bg border border-dev-border space-y-3">
-                <div className="text-xs font-mono font-semibold text-white">
+                <div className="text-xs font-semibold text-white">
                   {idx + 1}. {q.prompt}
                 </div>
 
@@ -1375,7 +1375,7 @@ export const LessonView: React.FC = () => {
                   {q.answers.map((ans) => (
                     <label
                       key={ans.id}
-                      className={`flex items-start gap-2.5 p-2.5 rounded border text-xs font-mono cursor-pointer transition-colors ${
+                      className={`flex items-start gap-2.5 p-2.5 rounded border text-xs cursor-pointer transition-colors ${
                         quizAnswers[q.id] === ans.id
                           ? 'border-dev-green bg-dev-green/10 text-white'
                           : 'border-dev-border hover:bg-dev-surface text-zinc-300'
@@ -1398,7 +1398,7 @@ export const LessonView: React.FC = () => {
 
           <button
             onClick={handleQuizSubmit}
-            className="w-full py-2.5 px-4 bg-dev-green text-black font-mono font-bold text-xs rounded hover:bg-dev-greenDim transition-colors shadow-glow-green"
+            className="w-full py-2.5 px-4 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-colors"
           >
             [ SUBMETER RESPOSTAS DO QUIZ ]
           </button>

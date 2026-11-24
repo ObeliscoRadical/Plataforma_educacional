@@ -61,14 +61,14 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050608] text-dev-text font-mono flex flex-col justify-between selection:bg-dev-green selection:text-black relative overflow-hidden">
+    <div className="min-h-screen bg-dev-bg text-dev-text flex flex-col justify-between selection:bg-dev-green selection:text-dev-bg relative overflow-hidden">
       {/* Background Cybernetic Grid FX */}
       <div className="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
 
       {/* Top Brand Bar */}
       <header className="px-6 py-4 border-b border-dev-border/70 flex items-center justify-between bg-dev-bg/80 backdrop-blur-md z-10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-dev-green/15 border border-dev-green/40 flex items-center justify-center text-dev-green shadow-glow-green">
+          <div className="w-8 h-8 rounded-lg bg-dev-green/15 border border-dev-green/40 flex items-center justify-center text-dev-green">
             <Terminal className="w-4 h-4" />
           </div>
           <div>
@@ -139,7 +139,7 @@ export const LoginScreen: React.FC = () => {
                 onClick={() => { setActiveTab('LOGIN'); setError(''); }}
                 className={`py-2.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'LOGIN'
-                    ? 'bg-dev-green text-black shadow-glow-green font-black'
+                    ? 'bg-dev-green text-dev-bg font-black'
                     : 'text-zinc-400 hover:text-white'
                 }`}
               >
@@ -152,7 +152,7 @@ export const LoginScreen: React.FC = () => {
                 onClick={() => { setActiveTab('REGISTER'); setError(''); }}
                 className={`py-2.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'REGISTER'
-                    ? 'bg-dev-cyan text-black shadow-glow-cyan font-black'
+                    ? 'bg-dev-cyan text-dev-bg font-black'
                     : 'text-zinc-400 hover:text-white'
                 }`}
               >
@@ -287,8 +287,8 @@ export const LoginScreen: React.FC = () => {
                   disabled={loading}
                   className={`w-full mt-2 py-3 px-4 font-bold text-xs rounded-lg transition-all shadow-terminal flex items-center justify-center gap-2 ${
                     activeTab === 'LOGIN'
-                      ? 'bg-dev-green text-black hover:bg-dev-greenDim shadow-glow-green'
-                      : 'bg-dev-cyan text-black hover:bg-cyan-300 shadow-glow-cyan'
+                      ? 'bg-dev-green text-dev-bg hover:bg-dev-greenDim'
+                      : 'bg-dev-cyan text-dev-bg hover:bg-cyan-300'
                   }`}
                 >
                   {loading ? (

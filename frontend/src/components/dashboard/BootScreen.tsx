@@ -24,7 +24,7 @@ export const BootScreen: React.FC<{ onComplete: () => void }> = ({ onComplete })
   }, [bootStep]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-dev-bg flex flex-col items-center justify-center p-6 text-dev-text font-mono select-none">
+    <div className="fixed inset-0 z-50 bg-dev-bg flex flex-col items-center justify-center p-6 text-dev-text select-none">
       <div className="w-full max-w-2xl bg-dev-surface border border-dev-border rounded-lg p-6 shadow-terminal">
         {/* Terminal Header */}
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-dev-border">
@@ -40,7 +40,7 @@ export const BootScreen: React.FC<{ onComplete: () => void }> = ({ onComplete })
         </div>
 
         {/* Boot Steps Log */}
-        <div className="space-y-2 text-xs font-mono mb-6 min-h-[180px]">
+        <div className="space-y-2 text-xs mb-6 min-h-[180px]">
           {steps.slice(0, bootStep).map((msg, i) => (
             <div key={i} className="flex items-start gap-2 text-dev-text animate-fade-in">
               <span className="text-dev-cyan font-bold">{`[0${i + 1}.00]`}</span>
@@ -52,7 +52,7 @@ export const BootScreen: React.FC<{ onComplete: () => void }> = ({ onComplete })
           ))}
           {bootStep < steps.length && (
             <div className="flex items-center gap-2 text-dev-muted">
-              <span className="inline-block w-2 h-4 bg-dev-green animate-blink-slow"></span>
+              <span className="inline-block w-2 h-4 bg-dev-green"></span>
               <span>Loading subsystem...</span>
             </div>
           )}
@@ -62,13 +62,13 @@ export const BootScreen: React.FC<{ onComplete: () => void }> = ({ onComplete })
         {bootStep >= steps.length ? (
           <button
             onClick={onComplete}
-            className="w-full py-3 px-4 bg-dev-green text-black font-bold text-xs rounded hover:bg-dev-greenDim transition-all shadow-glow-green flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 bg-dev-green text-dev-bg font-bold text-xs rounded hover:bg-dev-greenDim transition-all flex items-center justify-center gap-2"
           >
             <span>[ ENTER TRAINING ENVIRONMENT ]</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
-          <div className="text-center text-xs text-dev-muted font-mono animate-pulse">
+          <div className="text-center text-xs text-dev-muted animate-pulse">
             Calibrating system parameters...
           </div>
         )}

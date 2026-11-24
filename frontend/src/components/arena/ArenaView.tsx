@@ -161,16 +161,16 @@ export const ArenaView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 font-mono">
+    <div className="space-y-6">
       {/* Top Arena Header Bar */}
       <div className="bg-dev-surface border border-dev-border rounded-lg p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-dev-border">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-dev-green mb-1">
+            <div className="flex items-center gap-2 text-xs text-dev-green mb-1">
               <Zap className="w-4 h-4 text-amber-400" />
               <span>ARENA DE SPEED CODING // DOPAMINA DIÁRIA</span>
             </div>
-            <h1 className="text-lg font-bold font-mono text-white flex items-center gap-2">
+            <h1 className="text-lg font-bold text-white flex items-center gap-2">
               <span>Desafios Relâmpago de 60 Segundos</span>
               <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
                 BLITZ MODE
@@ -201,7 +201,7 @@ export const ArenaView: React.FC = () => {
               onClick={() => setActiveDrillIndex(idx)}
               className={`p-2.5 rounded-lg border text-left transition-all ${
                 activeDrillIndex === idx
-                  ? 'border-dev-green bg-dev-green/10 text-dev-green font-bold shadow-glow-green'
+                  ? 'border-dev-green bg-dev-green/10 text-dev-green font-bold'
                   : 'border-dev-border bg-dev-bg hover:bg-dev-surface text-zinc-400'
               }`}
             >
@@ -241,7 +241,7 @@ export const ArenaView: React.FC = () => {
             {!isRunning && !drillSuccess && (
               <button
                 onClick={handleStartDrill}
-                className="px-4 py-1.5 rounded bg-dev-green text-black font-bold text-xs hover:bg-dev-greenDim transition-all shadow-glow-green flex items-center gap-1"
+                className="px-4 py-1.5 rounded bg-dev-green text-dev-bg font-bold text-xs hover:bg-dev-greenDim transition-all flex items-center gap-1"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>INICIAR CRONÔMETRO</span>
@@ -256,7 +256,7 @@ export const ArenaView: React.FC = () => {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             rows={9}
-            className="w-full p-4 rounded-lg bg-black border border-dev-cyan/50 text-xs font-mono text-dev-green focus:border-dev-green focus:ring-1 focus:ring-dev-green outline-none resize-none leading-relaxed shadow-terminal"
+            className="w-full p-4 rounded-lg bg-black border border-dev-cyan/50 text-xs text-dev-green focus:border-dev-green focus:ring-1 focus:ring-dev-green outline-none resize-none leading-relaxed shadow-terminal"
           />
         </div>
 
@@ -271,8 +271,8 @@ export const ArenaView: React.FC = () => {
             disabled={executing || !code.trim()}
             className={`px-6 py-2.5 rounded font-bold text-xs transition-all shadow-terminal flex items-center gap-2 ${
               drillSuccess
-                ? 'bg-emerald-500 text-black hover:bg-emerald-400'
-                : 'bg-dev-green text-black hover:bg-dev-greenDim shadow-glow-green'
+                ? 'bg-emerald-500 text-dev-bg hover:bg-emerald-400'
+                : 'bg-dev-green text-dev-bg hover:bg-dev-greenDim'
             }`}
           >
             {executing ? (

@@ -23,8 +23,8 @@ const MainShell: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050608] flex items-center justify-center p-12 text-dev-green font-mono text-xs">
-        <span className="inline-block w-2 h-4 bg-dev-green mr-2 animate-blink-slow"></span>
+      <div className="min-h-screen bg-dev-bg flex items-center justify-center p-12 text-dev-green text-xs">
+        <span className="inline-block w-2 h-4 bg-dev-green mr-2"></span>
         Inicializando subsistemas do Developer OS...
       </div>
     );
@@ -36,7 +36,7 @@ const MainShell: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-dev-bg text-dev-text font-mono flex flex-col selection:bg-dev-green selection:text-black">
+    <div className="min-h-screen bg-dev-bg text-dev-text flex flex-col selection:bg-dev-green selection:text-dev-bg">
       {/* Terminal Header */}
       <TerminalHeader onOpenAuth={() => {}} />
 

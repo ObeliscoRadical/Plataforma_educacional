@@ -64,8 +64,8 @@ export const PaywallModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md font-mono">
-      <div className="w-full max-w-xl bg-dev-surface border-2 border-dev-green rounded-xl shadow-glow-green overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+      <div className="w-full max-w-xl bg-dev-surface border-2 border-dev-green rounded-xl overflow-hidden">
         {/* Top Header */}
         <div className="bg-dev-bg border-b border-dev-border p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ export const PaywallModal: React.FC = () => {
             <button
               onClick={handleStripeCheckout}
               disabled={loadingStripe || loadingInstant}
-              className="w-full py-3 px-4 bg-dev-green text-black font-bold text-xs rounded-lg hover:bg-dev-greenDim transition-all shadow-glow-green flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-dev-green text-dev-bg font-bold text-xs rounded-lg hover:bg-dev-greenDim transition-all flex items-center justify-center gap-2"
             >
               {loadingStripe ? (
                 <>

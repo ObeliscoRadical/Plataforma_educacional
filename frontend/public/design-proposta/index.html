@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Developer OS — Proposta de design "Aula Viva"</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0c0f; --s1:#111317; --s2:#161920; --line:#232733; --line2:#2f3442;
+  --text:#ecebe6; --mute:#8b90a0; --faint:#555b6b;
+  --signal:#c6ff3d;      /* único acento: "sinal" ao vivo */
+  --signal-ink:#10140a;
+  --warm:#ffb454;        /* só para alertas/dicas */
+  --r:14px;
+  --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0}
+html{color-scheme:dark}
+body{background:var(--bg);color:var(--text);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(900px 500px at 78% -10%,rgba(198,255,61,.07),transparent 60%),
+             radial-gradient(700px 400px at 0% 100%,rgba(255,180,84,.04),transparent 60%)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px;position:relative}
+.mono{font-family:var(--mono)}
+.tag{font:500 12px var(--mono);color:var(--mute);letter-spacing:.04em}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:6px}
+
+/* nav */
+nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em}
+.logo i{width:22px;height:22px;border-radius:7px;background:var(--signal);display:grid;place-items:center;color:var(--signal-ink);font:600 12px var(--mono);font-style:normal}
+.nav-r{display:flex;gap:22px;align-items:center;color:var(--mute);font-size:14px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;font-weight:550;font-size:14px;border:1px solid var(--line2);background:transparent;color:var(--text);cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--mute)}
+.btn.pri{background:var(--signal);color:var(--signal-ink);border-color:var(--signal)}
+.btn.pri:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;padding:56px 0 72px}
+.live{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;font:500 12px var(--mono);color:var(--mute);background:var(--s1)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 0 rgba(198,255,61,.6);animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 8px rgba(198,255,61,0)}100%{box-shadow:0 0 0 0 rgba(198,255,61,0)}}
+h1{font-size:clamp(40px,5.6vw,68px);line-height:1.02;letter-spacing:-.035em;font-weight:600;margin:22px 0 20px}
+h1 em{font-style:normal;color:var(--signal)}
+.lead{color:var(--mute);font-size:18px;max-width:520px}
+.cta{display:flex;gap:12px;margin:30px 0 14px;flex-wrap:wrap}
+.fine{color:var(--faint);font-size:13px}
+
+/* professor card */
+.prof{background:linear-gradient(180deg,var(--s2),var(--s1));border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+.prof-h{display:flex;align-items:center;gap:14px}
+.orb{width:54px;height:54px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 30%,#e9ffa6,var(--signal) 45%,#6b9a00);box-shadow:0 0 30px rgba(198,255,61,.35);animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.07);box-shadow:0 0 44px rgba(198,255,61,.5)}}
+.prof-h b{display:block;font-weight:600}
+.wave{display:flex;align-items:center;gap:3px;height:36px;margin:18px 0 12px}
+.wave span{flex:1;background:var(--signal);border-radius:3px;min-height:4px;opacity:.85;animation:w 1.1s ease-in-out infinite}
+@keyframes w{50%{height:6px}}
+.say{font-size:15px;color:var(--text);border-left:2px solid var(--signal);padding-left:14px}
+.say small{display:block;margin-top:8px;color:var(--mute)}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.chip{padding:7px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--mute);background:var(--bg)}
+
+/* bento */
+h2{font-size:clamp(28px,3.4vw,40px);letter-spacing:-.03em;font-weight:600;margin-bottom:10px}
+.sec{padding:40px 0}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:28px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:24px;transition:.25s}
+.card:hover{border-color:var(--line2);transform:translateY(-2px)}
+.card h3{font-size:18px;letter-spacing:-.01em;margin:10px 0 6px;font-weight:600}
+.card p{color:var(--mute);font-size:15px}
+.c3{grid-column:span 3}.c2{grid-column:span 2}.c4{grid-column:span 4}
+pre{font:400 13.5px/1.7 var(--mono);color:#c9ccd6;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:14px;overflow:auto}
+.k{color:#7aa2ff}.s{color:var(--signal)}.c{color:var(--faint)}
+.lvl{display:flex;gap:6px;margin-top:16px}
+.lvl i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.lvl i.on{background:var(--signal)}
+
+/* lesson mock */
+.lesson{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--s1);margin-top:28px}
+.lbar{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);font-size:14px;color:var(--mute)}
+.prog{flex:1;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.prog i{display:block;width:42%;height:100%;background:var(--signal)}
+.lbody{display:grid;grid-template-columns:320px 1fr}
+.lside{padding:22px;border-right:1px solid var(--line);background:var(--s2)}
+.lmain{padding:22px}
+.bubble{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;margin-top:14px}
+.bubble.me{background:rgba(198,255,61,.07);border-color:rgba(198,255,61,.25)}
+.hint{display:inline-flex;gap:6px;align-items:center;color:var(--warm);font:500 12px var(--mono);margin-bottom:6px}
+.run{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:13px;color:var(--mute)}
+.ok{color:var(--signal);font-family:var(--mono)}
+
+/* tokens */
+.sw{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:20px}
+.sw div{border-radius:10px;padding:34px 10px 10px;font:500 11px var(--mono);border:1px solid var(--line)}
+footer{padding:50px 0 70px;color:var(--faint);font-size:13px}
+
+@media(max-width:860px){.hero{grid-template-columns:1fr}.c3,.c2,.c4{grid-column:span 6}.lbody{grid-template-columns:1fr}.lside{border-right:0;border-bottom:1px solid var(--line)}.sw{grid-template-columns:repeat(3,1fr)}.nav-r a{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="logo"><i>&gt;_</i> Developer OS</div>
+    <div class="nav-r"><a href="#metodo">Método</a><a href="#aula">A aula</a><a href="#sistema">Design system</a><a class="btn" href="#">Entrar</a></div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="live"><span class="dot"></span> Professor Marcus · ao vivo agora</span>
+      <h1>Aprenda a programar com um professor que <em>conversa</em> com você.</h1>
+      <p class="lead">Aulas em voz natural, mentor que pergunta antes de responder e um editor que roda seu código na hora. Do zero ao primeiro app no ar.</p>
+      <div class="cta">
+        <a class="btn pri" href="#">Começar aula grátis →</a>
+        <a class="btn" href="#">Entrar com Google</a>
+      </div>
+      <p class="fine">Sem cartão. A aula 00.01 é aberta para todos.</p>
+    </div>
+
+    <aside class="prof" aria-label="Professor virtual">
+      <div class="prof-h">
+        <div class="orb" aria-hidden="true"></div>
+        <div><b>Marcus</b><span class="tag">PROFESSOR IA · pt-BR</span></div>
+      </div>
+      <div class="wave" aria-hidden="true" id="wave"></div>
+      <p class="say">“Antes de eu te mostrar, me diz: o que você espera que <span class="mono" style="color:var(--signal)">soma([2,3])</span> retorne?”
+        <small>Nível de dica 1 de 5 · pergunta guia</small></p>
+      <div class="chips"><span class="chip">🎧 Ouvir de novo</span><span class="chip">💡 Pedir dica</span><span class="chip">▶ Rodar código</span></div>
+    </aside>
+  </header>
+
+  <section class="sec" id="metodo">
+    <span class="tag">O MÉTODO</span>
+    <h2>Menos tela, mais aprendizado.</h2>
+    <div class="bento">
+      <div class="card c4">
+        <span class="tag">01 · AULA POR VOZ</span>
+        <h3>Escute, não só leia.</h3>
+        <p>O professor explica em português natural. Você pausa, volta e pergunta.</p>
+        <pre><span class="c">// aula 02.03 — filtrar listas</span>
+<span class="k">const</span> pares = nums.<span class="k">filter</span>(n =&gt; n % 2 === 0)
+<span class="s">✓ 3 testes passaram</span></pre>
+      </div>
+      <div class="card c2">
+        <span class="tag">02 · MENTOR SOCRÁTICO</span>
+        <h3>Dicas em 5 níveis.</h3>
+        <p>Primeiro uma pergunta. A solução completa só no fim.</p>
+        <div class="lvl"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+      </div>
+      <div class="card c2">
+        <span class="tag">03 · PRÁTICA</span>
+        <h3>Código roda na hora.</h3>
+        <p>Editor ao lado da aula, sem instalar nada.</p>
+      </div>
+      <div class="card c2">
+        <span class="tag">04 · PROGRESSO</span>
+        <h3>Veja o que domina.</h3>
+        <p>Radar de habilidades: dominado, frágil, a revisar.</p>
+      </div>
+      <div class="card c2">
+        <span class="tag">05 · CERTIFICADO</span>
+        <h3>Prove o que sabe.</h3>
+        <p>Projeto final e prova antes do certificado.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="aula">
+    <span class="tag">A TELA PRINCIPAL</span>
+    <h2>A aula: professor à esquerda, código à direita.</h2>
+    <div class="lesson">
+      <div class="lbar"><span class="mono">02.03</span><span>Filtrando listas</span><div class="prog" role="progressbar" aria-valuenow="42"><i></i></div><span class="mono">42%</span></div>
+      <div class="lbody">
+        <div class="lside">
+          <div class="prof-h"><div class="orb" style="width:38px;height:38px"></div><div><b>Marcus</b><span class="tag">falando…</span></div></div>
+          <div class="bubble"><span class="hint">DICA 2/5</span><br>Pense em como testar cada item. O que o <span class="mono">%</span> devolve quando o número é par?</div>
+          <div class="bubble me">Retorna zero?</div>
+          <div class="bubble">Isso. Agora use isso como condição no <span class="mono">filter</span>.</div>
+        </div>
+        <div class="lmain">
+          <span class="tag">EXERCÍCIO</span>
+          <h3 style="margin:6px 0 0;font-weight:600;letter-spacing:-.01em">Retorne só os números pares</h3>
+<pre><span class="k">function</span> pares(nums) {
+  <span class="k">return</span> nums.<span class="k">filter</span>(n =&gt; n % 2 <span class="s">=== 0</span>)
+}</pre>
+          <div class="run"><span>Saída esperada: <span class="mono">[2, 4]</span></span><span class="ok">● 3/3 testes passaram</span></div>
+          <div style="display:flex;gap:10px;margin-top:16px"><a class="btn pri" href="#">Rodar</a><a class="btn" href="#">Pedir dica</a><a class="btn" href="#">Próxima aula →</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="sistema">
+    <span class="tag">DESIGN SYSTEM</span>
+    <h2>"Aula Viva": um acento só, o sinal.</h2>
+    <p class="lead" style="max-width:680px">Escuro quente e calmo, uma cor de destaque (lima) que significa sempre "isto está vivo": voz, progresso, teste passando. Mono apenas para código e rótulos; texto corrido em Geist.</p>
+    <div class="sw">
+      <div style="background:#0b0c0f">bg #0b0c0f</div>
+      <div style="background:#111317">s1 #111317</div>
+      <div style="background:#161920">s2 #161920</div>
+      <div style="background:#c6ff3d;color:#10140a">signal #c6ff3d</div>
+      <div style="background:#ffb454;color:#1a1000">warm #ffb454</div>
+      <div style="background:#ecebe6;color:#0b0c0f">text #ecebe6</div>
+    </div>
+  </section>
+
+  <footer>Proposta visual estática · não afeta o app · Developer OS</footer>
+</div>
+<script>
+const w=document.getElementById('wave');
+for(let i=0;i<48;i++){const s=document.createElement('span');s.style.height=(8+Math.abs(Math.sin(i*.7))*26)+'px';s.style.animationDelay=(i*.05)+'s';w.appendChild(s)}
+</script>
+</body>
+</html>
